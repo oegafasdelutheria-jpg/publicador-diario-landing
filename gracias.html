@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gracias por tu compra — Publicador Diario</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0a0a0f; --surface: #121218; --surface2: #1a1a24;
+  --border: rgba(255,255,255,0.08); --border-hover: rgba(255,255,255,0.16);
+  --accent: #c8a96e; --accent-dim: rgba(200,169,110,0.14);
+  --text: #f0ede8; --text2: #9a9490;
+}
+body {
+  font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text);
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  padding: 24px; line-height: 1.6;
+}
+.card {
+  max-width: 480px; width: 100%; background: var(--surface);
+  border: 1px solid var(--border-hover); border-radius: 22px; padding: 44px 34px;
+  text-align: center;
+}
+.check {
+  width: 62px; height: 62px; border-radius: 50%; background: var(--accent-dim);
+  border: 1px solid var(--accent); display: flex; align-items: center; justify-content: center;
+  font-size: 28px; color: var(--accent); margin: 0 auto 22px;
+}
+h1 { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 800; margin-bottom: 12px; }
+p { color: var(--text2); font-size: 15px; margin-bottom: 8px; }
+.steps {
+  text-align: left; background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 14px; padding: 20px; margin: 26px 0; display: flex; flex-direction: column; gap: 12px;
+}
+.steps div { font-size: 14px; display: flex; gap: 10px; }
+.steps .num {
+  font-family: 'DM Mono', monospace; color: var(--accent); font-weight: 700; flex-shrink: 0;
+}
+.btn {
+  display: block; background: linear-gradient(135deg, var(--accent), #9a6830);
+  color: #0a0a0f; font-weight: 700; font-size: 15.5px; padding: 15px 26px;
+  border-radius: 99px; text-decoration: none; margin-top: 10px;
+}
+.note { font-size: 12.5px; color: #5a5650; margin-top: 22px; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="check">✓</div>
+    <h1>¡Gracias por tu compra!</h1>
+    <p>Ya tenés acceso completo a Publicador Diario. Es tuyo para siempre — sin cuotas.</p>
+
+    <div class="steps">
+      <div><span class="num">1.</span> Abrí el botón de abajo <strong>desde Chrome o Safari</strong> (no desde WhatsApp o Instagram — si llegaste desde ahí, tocá los tres puntitos y elegí "Abrir en el navegador").</div>
+      <div><span class="num">2.</span> Tocá los tres puntitos (Android) o el ícono de compartir (iPhone).</div>
+      <div><span class="num">3.</span> Elegí "Instalar aplicación" o "Añadir a pantalla de inicio".</div>
+    </div>
+
+    <!-- Reemplazar por la URL real donde está alojada la app -->
+    <a href="https://tu-usuario.github.io/publicador-diario/" class="btn">Abrir Publicador Diario</a>
+
+    <p class="note">¿Algún problema para instalarla? Escribinos y te ayudamos.</p>
+  </div>
+</body>
+</html>
