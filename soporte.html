@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Soporte — Publicador Diario</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0a0a0f; --surface: #121218; --border: rgba(255,255,255,0.08);
+  --accent: #c8a96e; --accent-dim: rgba(200,169,110,0.14);
+  --text: #f0ede8; --text2: #9a9490;
+}
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+.wrap { max-width: 720px; margin: 0 auto; padding: 60px 28px 100px; }
+a { color: var(--accent); }
+.back { display: inline-block; margin-bottom: 30px; font-size: 13px; color: var(--text2); text-decoration: none; }
+h1 { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 800; margin-bottom: 14px; }
+p { color: var(--text2); font-size: 15px; margin-bottom: 14px; }
+.contact-card {
+  background: var(--surface); border: 1px solid var(--accent); border-radius: 16px;
+  padding: 26px; margin: 30px 0; text-align: center;
+}
+.contact-card a { font-size: 18px; font-weight: 700; text-decoration: none; }
+h2 { font-family: 'Playfair Display', serif; font-size: 19px; font-weight: 700; margin: 36px 0 14px; }
+.item { border-top: 1px solid var(--border); padding: 16px 0; }
+.item h3 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+.item p { margin-bottom: 0; font-size: 14px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a href="index.html" class="back">← Volver a Publicador Diario</a>
+  <h1>¿En qué te podemos ayudar?</h1>
+  <p>Publicador Diario no tiene cuentas ni contraseñas — es una app que se instala en tu propio dispositivo. La mayoría de las dudas son sobre instalación o sobre tu compra.</p>
+
+  <div class="contact-card">
+    <p style="margin-bottom:6px;">Escríbenos directamente</p>
+    <a href="mailto:publicadordiario.app@gmail.com">publicadordiario.app@gmail.com</a>
+  </div>
+
+  <h2>Antes de escribir, revisá esto</h2>
+
+  <div class="item">
+    <h3>No me deja instalar la app</h3>
+    <p>Si abriste el link desde WhatsApp o Instagram, tocá los tres puntitos y elegí "Abrir en el navegador" (Chrome o Safari) — esas apps no permiten instalar nada desde su propia ventana.</p>
+  </div>
+
+  <div class="item">
+    <h3>Pagué pero no encuentro el link de la app</h3>
+    <p>Después de pagar, Stripe te redirige a una página con el botón para abrir la app. Si la cerraste sin querer, escribinos con el email que usaste para pagar y te lo reenviamos.</p>
+  </div>
+
+  <div class="item">
+    <h3>Perdí mis datos guardados (nombre del negocio, colores, etc.)</h3>
+    <p>Esos datos viven en tu dispositivo, no en un servidor nuestro. Si cambiaste de teléfono o borraste el navegador, se pierden y hay que configurarlos de nuevo — no hay forma de recuperarlos de nuestro lado.</p>
+  </div>
+
+  <div class="item">
+    <h3>Quiero pedir un reembolso</h3>
+    <p>Escribinos contando qué pasó. Respondemos y resolvemos caso por caso.</p>
+  </div>
+
+  <div class="item">
+    <h3>Tengo una idea o encontré un error</h3>
+    <p>Nos encanta escuchar esto. Escribinos, leemos todo.</p>
+  </div>
+</div>
+</body>
+</html>
