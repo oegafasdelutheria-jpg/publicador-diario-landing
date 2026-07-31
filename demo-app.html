@@ -1,0 +1,1824 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Publicador Diario</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@500&family=Fraunces:wght@600;700&family=Cormorant+Garamond:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #f7f4ef;
+  --surface: #ffffff;
+  --surface2: #f0ece3;
+  --surface3: #e6e0d4;
+  --border: rgba(20,16,12,0.10);
+  --border-hover: rgba(20,16,12,0.20);
+  --accent: #c8a96e;
+  --accent-text: #7a5a20;
+  --accent-dim: rgba(200,169,110,0.20);
+  --text: #1c1712;
+  --text2: #6b6259;
+  --text3: #736a5e;
+  --radius: 12px;
+  --transition: 0.2s cubic-bezier(0.4,0,0.2,1);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.5;
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 99px; }
+
+header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 28px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(247,244,239,0.85);
+  backdrop-filter: blur(16px);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.logo-mark {
+  width: 34px; height: 34px;
+  background: linear-gradient(135deg, var(--accent), #9a6830);
+  border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.logo-text h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+}
+
+.logo-text span {
+  font-size: 10.5px;
+  color: var(--accent-text);
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.app {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  grid-template-areas: "top canvas" "rest canvas";
+  min-height: calc(100vh - 67px);
+}
+
+@media (max-width: 900px) {
+  .app {
+    grid-template-columns: 1fr;
+    grid-template-areas: "top" "canvas" "rest";
+  }
+}
+
+.panel-top, .panel-rest {
+  border-right: 1px solid var(--border);
+  background: var(--surface);
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  overflow-y: auto;
+}
+.panel-top { grid-area: top; padding-bottom: 0; }
+.panel-rest { grid-area: rest; padding-top: 0; }
+@media (max-width: 900px) {
+  .panel-top, .panel-rest { border-right: none; padding-bottom: 22px; padding-top: 22px; }
+}
+
+.canvas-block {
+  grid-area: canvas;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  overflow-y: auto;
+}
+
+.field-group { display: flex; flex-direction: column; gap: 8px; }
+
+label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--text2);
+}
+
+input[type="text"], textarea, select {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  padding: 10px 13px;
+  transition: var(--transition);
+  width: 100%;
+  outline: none;
+}
+
+input[type="text"]:focus, textarea:focus, select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-dim);
+}
+
+textarea { resize: vertical; min-height: 60px; font-size: 14px; line-height: 1.4; }
+select option { background: var(--surface2); }
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  border-radius: 99px;
+  background: var(--surface3);
+  outline: none;
+  cursor: pointer;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  border: 2px solid #0a0a0f;
+}
+input[type="range"]::-moz-range-thumb {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  border: 2px solid #0a0a0f;
+}
+
+/* Sector selector */
+.sector-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+
+.sector-btn {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text2);
+  padding: 12px 6px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+}
+
+.sector-btn .icon { font-size: 20px; }
+.sector-btn:hover { border-color: var(--border-hover); color: var(--text); }
+.sector-btn.selected { border-color: var(--accent); background: var(--accent-dim); color: var(--accent-text); }
+
+/* Position selector */
+.position-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+
+.pos-btn {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text2);
+  padding: 10px 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.pos-btn:hover { border-color: var(--border-hover); color: var(--text); }
+.pos-btn.selected { border-color: var(--accent); background: var(--accent-dim); color: var(--accent-text); }
+
+.format-btn {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text2);
+  padding: 10px 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.format-btn:hover { border-color: var(--border-hover); color: var(--text); }
+.format-btn.selected { border-color: var(--accent); background: var(--accent-dim); color: var(--accent-text); }
+
+/* Color swatches */
+.color-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+.swatch {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: var(--transition);
+  flex-shrink: 0;
+}
+
+.swatch.selected { border-color: var(--text); transform: scale(1.1); }
+
+.color-custom {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  padding: 0;
+  overflow: hidden;
+  background: none;
+  flex-shrink: 0;
+}
+.color-custom::-webkit-color-swatch-wrapper { padding: 0; }
+.color-custom::-webkit-color-swatch { border: none; border-radius: 50%; }
+
+/* Drop zone */
+.drop-zone {
+  border: 1.5px dashed var(--border-hover);
+  border-radius: var(--radius);
+  padding: 22px 14px;
+  text-align: center;
+  cursor: pointer;
+  transition: var(--transition);
+  color: var(--text2);
+  font-size: 12.5px;
+}
+.drop-zone:hover, .drop-zone.drag-over { border-color: var(--accent); background: var(--accent-dim); color: var(--text); }
+.drop-zone .icon { font-size: 22px; display: block; margin-bottom: 6px; }
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: none;
+  border-radius: var(--radius);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  width: 100%;
+  letter-spacing: 0.2px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent), #9a6830);
+  color: #0a0a0f;
+  padding: 14px;
+  font-size: 14.5px;
+}
+.btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text2);
+}
+.btn-ghost:hover { border-color: var(--border-hover); color: var(--text); background: var(--surface2); }
+
+.divider { height: 1px; background: var(--border); margin: 2px 0; }
+
+/* Canvas preview */
+.canvas-wrap {
+  width: 100%;
+  max-width: 270px;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+  border: 1px solid var(--border);
+}
+#storyCanvas { width: 100%; height: 100%; display: block; }
+
+.caption-box {
+  width: 100%;
+  max-width: 420px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.field-hint { font-size: 11px; color: var(--text3); }
+
+.link-btn {
+  background: none;
+  border: none;
+  color: var(--accent-text);
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+  padding: 2px 0;
+  width: fit-content;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.link-btn:hover { opacity: 0.8; }
+
+/* Tarjeta de idea del día */
+.idea-card {
+  background: linear-gradient(160deg, var(--accent-dim), transparent);
+  border: 1px solid var(--border-hover);
+  border-radius: var(--radius);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.idea-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: var(--accent-text);
+  font-weight: 500;
+}
+.idea-directive {
+  font-family: 'Playfair Display', serif;
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+.idea-photo {
+  font-size: 13px;
+  color: var(--text2);
+  margin-top: 2px;
+}
+
+.personalize-body {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Toast */
+.toast-container { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 8px; z-index: 999; }
+.toast {
+  background: var(--surface3);
+  border: 1px solid var(--border-hover);
+  border-radius: var(--radius);
+  padding: 10px 16px;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+}
+.toast.success { border-color: rgba(30,122,69,0.4); color: #1e7a45; }
+.toast.error { border-color: rgba(184,48,48,0.4); color: #b83030; }
+.toast.info { border-color: rgba(47,109,196,0.4); color: #2f6dc4; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-mark">✦</div>
+  <div class="logo-text">
+    <h1>Publicador Diario</h1>
+    <span>Tu post de hoy, en 30 segundos</span>
+  </div>
+</header>
+
+<div class="app">
+  <div class="panel-top">
+
+    <div class="idea-card" id="ideaCard">
+      <div class="idea-label" id="ideaFamilyLabel">HOY: PRODUCTO</div>
+      <div class="idea-directive" id="ideaDirective">Muestra tu producto o servicio de hoy.</div>
+      <div class="idea-photo" id="ideaPhotoHint">📷 Haz una foto de lo que tengas listo ahora mismo.</div>
+      <button type="button" class="link-btn" id="nextIdeaBtn" style="margin-top:6px;">↻ Otra idea</button>
+    </div>
+
+    <div class="field-group">
+      <div class="drop-zone" id="dropZone">
+        <span class="icon">📷</span>
+        Arrastra una imagen o haz clic para subirla
+      </div>
+      <div class="field-hint">Y si hoy no tienes tiempo, no te preocupes: la creamos igual, sin foto.</div>
+      <input type="file" id="imageInput" style="display:none">
+    </div>
+
+  </div>
+
+  <div class="canvas-block">
+    <div class="canvas-wrap">
+      <canvas id="storyCanvas" width="1080" height="1920"></canvas>
+    </div>
+  </div>
+
+  <div class="panel-rest">
+
+    <div class="field-group" id="zoomControl" style="display:none;">
+      <label>Encuadre de la foto</label>
+      <input type="range" id="zoomSlider" min="100" max="250" value="100" step="5">
+      <div class="field-hint">Arrastra la foto directamente sobre la vista previa para moverla.</div>
+    </div>
+
+    <div class="divider"></div>
+    <div class="personalize-body">
+
+        <div class="field-group">
+          <label>Formato</label>
+          <div class="position-grid" id="formatGrid" style="grid-template-columns: 1fr 1fr;">
+            <button class="format-btn selected" data-format="historia">Historia <span style="opacity:.65;font-weight:400;">· 9:16</span></button>
+            <button class="format-btn" data-format="publicacion">Publicación <span style="opacity:.65;font-weight:400;">· 4:5</span></button>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label>¿A qué te dedicas?</label>
+          <input type="text" id="sectorText" placeholder="Ej: peluquería, restaurante, tienda de ropa...">
+          <div class="field-hint" id="sectorHint">Escribe tu actividad y elegimos el estilo de frases por ti.</div>
+          <button type="button" class="link-btn" id="toggleSectorGrid">Prefiero elegir de una lista</button>
+          <div class="sector-grid" id="sectorGrid" style="display:none; margin-top:4px;"></div>
+        </div>
+
+        <div class="field-group">
+          <label>Nombre del negocio</label>
+          <input type="text" id="businessName" placeholder="Ej: Café Aurora" maxlength="40">
+          <button type="button" class="link-btn" id="forgetProfile" style="display:none;">¿No es tu negocio? Olvidar estos datos</button>
+        </div>
+
+        <div class="field-group">
+          <label>Color del marco</label>
+          <div class="color-row" id="colorRow"></div>
+          <div class="field-hint">Tiñe la foto y el marco para que combinen.</div>
+        </div>
+
+        <div class="field-group">
+          <label>Color del texto</label>
+          <div class="color-row" id="textColorRow"></div>
+          <div class="field-hint">Automático elige blanco o negro según el fondo, para que siempre se lea bien.</div>
+        </div>
+
+        <div class="field-group">
+          <label>Dónde va el texto</label>
+          <div class="position-grid">
+            <button class="pos-btn" data-pos="top">Arriba</button>
+            <button class="pos-btn" data-pos="middle">Medio</button>
+            <button class="pos-btn selected" data-pos="bottom">Abajo</button>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label>Tipografía</label>
+          <select id="fontSelect"></select>
+        </div>
+
+        <div class="field-group">
+          <label>Frase principal</label>
+          <textarea id="mainPhrase" placeholder="Escribe tu frase o deja que el programa la elija por ti"></textarea>
+        </div>
+
+        <div class="field-group">
+          <label>Frase fija al pie</label>
+          <input type="text" id="footerPhrase" placeholder="Ej: Pide ya · Reparto a domicilio">
+        </div>
+
+        <div class="caption-box">
+          <label>Texto para el pie de foto (caption de Instagram)</label>
+          <textarea id="captionText" placeholder="Se genera junto con la imagen al tocar 'hazlo tú'"></textarea>
+          <button class="btn btn-ghost" onclick="copyCaption()">📋 Copiar caption</button>
+        </div>
+
+        <button class="btn btn-ghost" onclick="renderCanvas()">Actualizar vista previa</button>
+      </div>
+
+    <div class="divider"></div>
+    <button class="btn btn-primary" id="createBtn">✦ Crear mi publicación</button>
+    <button class="btn btn-primary" id="demoBuyBtn" style="background:linear-gradient(135deg,#c8a96e,#9a6830); color:#0a0a0f;">🔓 Consigue tu app — 19€</button>
+    <p style="font-size:12px; color:var(--text3); text-align:center; margin-top:2px;">Esta es la app real. La imagen sale con marca de agua hasta que la compres.</p>
+
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+// ─── FORMATOS DISPONIBLES ───────────────────────────────────────────────────
+const FORMATS = {
+  historia: { width: 1080, height: 1920, label: 'Historia' },
+  publicacion: { width: 1080, height: 1350, label: 'Publicación' }
+};
+
+// ─── FAMILIAS DE CONTENIDO ──────────────────────────────────────────────────
+// No reetiquetan las frases existentes (evita duplicar todo el banco); deciden
+// qué IDEA y qué FOTO sugerirle a la persona cada vez, rotando para que la
+// experiencia no se sienta repetitiva aunque el texto salga del mismo banco.
+const FAMILIES = [
+  { key: 'producto', label: 'Producto', directive: 'Muestra tu producto o servicio de hoy.', photoIdea: 'Haz una foto de lo que tengas listo ahora mismo.' },
+  { key: 'proceso', label: 'Proceso', directive: 'Enseña cómo lo haces.', photoIdea: 'Fotografía algo mientras lo estás preparando o trabajando en ello.' },
+  { key: 'persona', label: 'Persona', directive: 'Muestra quién está detrás del negocio.', photoIdea: 'Una foto tuya, o de quien esté hoy al frente.' },
+  { key: 'pregunta', label: 'Pregunta', directive: 'Interactúa con quien te sigue.', photoIdea: null },
+  { key: 'confianza', label: 'Confianza', directive: 'Recuerda por qué confían en ti.', photoIdea: 'Una foto de tu espacio, tu equipo o un trabajo terminado.' }
+];
+
+function getCurrentFamily() {
+  return FAMILIES[state.familyIndex % FAMILIES.length];
+}
+
+function updateIdeaCard() {
+  const f = getCurrentFamily();
+  const check = state.ideaUsedToday ? ' ✓' : '';
+  document.getElementById('ideaFamilyLabel').textContent = 'HOY: ' + f.label.toUpperCase() + check;
+  document.getElementById('ideaDirective').textContent = f.directive;
+  const photoHint = document.getElementById('ideaPhotoHint');
+  if (f.photoIdea) {
+    photoHint.style.display = 'block';
+    photoHint.textContent = '📷 ' + f.photoIdea;
+  } else {
+    photoHint.style.display = 'none';
+  }
+}
+
+function markIdeaAsUsed() {
+  state.ideaUsedToday = true;
+  updateIdeaCard();
+}
+
+// ─── BANCO DE CONTENIDO POR SECTOR ──────────────────────────────────────────────
+const SECTORES = {
+  gastronomia: {
+    pattern: 'blobs',
+    label: 'Gastronomía', icon: '🍽️', accent: '#d9714e',
+    font: "'Fraunces', serif", fontWeight: 700, fontStyle: 'normal',
+    keywords: ['restaurante','bar','cafeteria','café','cafe','comida','gastronomia','gastronómico','pizzeria','pizzería','hamburgueseria','hamburguesería','panaderia','panadería','pasteleria','pastelería','cocina','tapas','marisqueria','marisquería','asador','taberna','bistro','heladeria','heladería','food truck','catering','bocadillos','bocateria'],
+    openersByFamily: {
+      producto: [
+        "Hoy sale del horno algo que no te vas a querer perder",
+        "El plato del día ya tiene nombre en {negocio}",
+        "Esto es lo que se cocina hoy en {negocio}"
+      ],
+      proceso: [
+        "Las cosas buenas empiezan mucho antes de llegar a la mesa",
+        "Haz una foto mientras lo estás preparando",
+        "Así se prepara, paso a paso, lo que hoy vas a probar"
+      ],
+      persona: [
+        "Detrás de cada plato hay alguien que lo cuida de verdad",
+        "Hoy te presentamos a quien cocina en {negocio}",
+        "Una cara conocida detrás del mostrador de {negocio}"
+      ],
+      pregunta: [
+        "¿Dulce o salado hoy?",
+        "¿Para comer aquí o para llevar?",
+        "¿Ya has desayunado o te esperamos con algo rico?"
+      ],
+      confianza: [
+        "Llevamos años haciendo esto de la misma manera, con el mismo cuidado",
+        "En {negocio} el sabor no es casualidad",
+        "Cada cliente que vuelve es la mejor señal de que algo hacemos bien"
+      ]
+    },
+    footers: [
+      "📍 {negocio} · Te esperamos",
+      "Pide ya · Reparto a domicilio",
+      "Abierto hoy hasta tarde",
+      "Reservas por DM",
+      "Ven a probarlo",
+      "Nueva carta disponible",
+      "Haz tu pedido ahora",
+      "Mesas disponibles hoy",
+      "Escríbenos y te guardamos sitio",
+      "Hoy también hacemos para llevar"
+    ],
+    captionsByFamily: {
+      producto: ["Hoy tenemos algo especial esperándote en {negocio}. Ven a probarlo o pídelo a domicilio."],
+      proceso: ["Hoy te enseñamos un poco de lo que pasa antes de abrir las puertas de {negocio}."],
+      persona: ["Detrás de cada plato de {negocio} hay una persona que lo prepara con cuidado. Hoy te la presentamos."],
+      pregunta: ["¿Dulce o salado? Cuéntanoslo en los comentarios, te leemos desde {negocio}."],
+      confianza: ["Llevamos tiempo haciendo las cosas de la misma manera en {negocio}, y se nota."]
+    }
+  },
+  belleza: {
+    pattern: 'rings',
+    label: 'Belleza / Estética', icon: '💇', accent: '#b98bb0',
+    font: "'Cormorant Garamond', serif", fontWeight: 700, fontStyle: 'italic',
+    keywords: ['peluqueria','peluquería','salon','salón','estetica','estética','spa','uñas','manicura','pedicura','belleza','maquillaje','barberia','barbería','masajes','depilacion','depilación','centro de belleza','tattoo','tatuaje'],
+    openersByFamily: {
+      producto: [
+        "Hoy tenemos hueco para tu tratamiento favorito",
+        "El servicio que buscabas ya está disponible en {negocio}",
+        "Esto es lo que puedes hacerte hoy en {negocio}"
+      ],
+      proceso: [
+        "Así preparamos cada detalle antes de tu cita en {negocio}",
+        "Haz una foto del antes, nosotros nos encargamos del después",
+        "Un vistazo a cómo trabajamos en {negocio}"
+      ],
+      persona: [
+        "Detrás de cada cambio de look hay alguien que lo piensa contigo",
+        "Hoy te presentamos a quien te va a cuidar en {negocio}",
+        "Una cara conocida te espera en {negocio}"
+      ],
+      pregunta: [
+        "¿Corte, color o los dos?",
+        "¿Lista para un cambio hoy?",
+        "¿Qué es lo que más te gustaría probar?"
+      ],
+      confianza: [
+        "Llevamos tiempo cuidando los mismos detalles en {negocio}",
+        "La confianza también se construye cita a cita",
+        "En {negocio} no improvisamos con tu imagen"
+      ]
+    },
+    footers: [
+      "📍 {negocio} · Reserva tu cita",
+      "Citas por DM o WhatsApp",
+      "Plazas limitadas esta semana",
+      "@{negocio} · Te esperamos",
+      "Primera consulta sin cargo",
+      "Escríbenos y lo coordinamos",
+      "Últimas citas de la semana",
+      "Consulta disponibilidad hoy",
+      "Te esperamos con todo listo"
+    ],
+    captionsByFamily: {
+      producto: ["Hoy tenemos hueco para el tratamiento que buscabas. Reserva tu cita en {negocio}."],
+      proceso: ["Un vistazo a lo que pasa antes de que salgas de {negocio} con un look nuevo."],
+      persona: ["Detrás de cada cita en {negocio} hay alguien que se toma en serio tu cuidado."],
+      pregunta: ["¿Corte, color o los dos? Cuéntanos qué buscas y te ayudamos a decidir."],
+      confianza: ["La confianza se construye cita a cita. Así trabajamos en {negocio}."]
+    }
+  },
+  moda: {
+    pattern: 'stripes',
+    label: 'Moda y Comercio', icon: '👗', accent: '#c8a96e',
+    font: "'Playfair Display', serif", fontWeight: 800, fontStyle: 'normal',
+    keywords: ['ropa','moda','boutique','tienda de ropa','zapateria','zapatería','accesorios','joyeria','joyería','calzado','textil','indumentaria','tienda','retail','regalos','papeleria','papelería','libreria','librería','floristeria','floristería'],
+    openersByFamily: {
+      producto: [
+        "Llegó lo nuevo a {negocio}",
+        "Esto es lo que tenemos hoy en {negocio}",
+        "Stock limitado, esto vuela rápido"
+      ],
+      proceso: [
+        "Así elegimos cada pieza que llega a {negocio}",
+        "Un vistazo a cómo armamos la nueva colección",
+        "Haz una foto de tu combinación favorita de hoy"
+      ],
+      persona: [
+        "Detrás de cada percha hay alguien que eligió con cuidado",
+        "Hoy te presentamos a quien arma los looks de {negocio}",
+        "Una cara conocida te espera en {negocio}"
+      ],
+      pregunta: [
+        "¿Con qué lo combinarías?",
+        "¿Cuál es tu prenda favorita de esta temporada?"
+      ],
+      confianza: [
+        "Llevamos temporadas eligiendo con el mismo cuidado",
+        "En {negocio} no vendemos por vender",
+        "Cada pieza que entra a {negocio} pasa nuestro propio filtro"
+      ]
+    },
+    footers: [
+      "📍 {negocio} · Envíos disponibles",
+      "Nueva colección · Stock limitado",
+      "Pruébatelo antes de comprarlo",
+      "@{negocio} · Todas las tallas",
+      "Escríbenos por tu talla",
+      "Pago a plazos disponible",
+      "Últimas unidades disponibles",
+      "Cambios y devoluciones fáciles",
+      "Visítanos o pide por DM"
+    ],
+    captionsByFamily: {
+      producto: ["Llegó lo nuevo a {negocio}. Pasa a verlo o escríbenos para reservar tu talla."],
+      proceso: ["Así elegimos cada temporada lo que llega a {negocio}."],
+      persona: ["Detrás de cada percha en {negocio} hay alguien que piensa en ti al elegir."],
+      pregunta: ["¿Con qué lo combinarías? Cuéntanos y armamos el look juntos."],
+      confianza: ["Cada pieza que entra a {negocio} pasa nuestro propio filtro antes de llegar a la tienda."]
+    }
+  },
+  salud: {
+    pattern: 'waves',
+    label: 'Salud y Bienestar', icon: '🧘', accent: '#6ba58a',
+    font: "'Fraunces', serif", fontWeight: 600, fontStyle: 'normal',
+    keywords: ['fisioterapia','fisio','clinica','clínica','gimnasio','entrenador','entrenadora','personal trainer','nutricion','nutrición','yoga','pilates','psicologia','psicología','osteopatia','osteopatía','bienestar','salud','terapia','rehabilitacion','rehabilitación'],
+    openersByFamily: {
+      producto: [
+        "Hoy tenemos sesión disponible en {negocio}",
+        "Esto es lo que puedes reservar hoy en {negocio}",
+        "Un espacio para ti, disponible esta semana"
+      ],
+      proceso: [
+        "Así trabajamos cada sesión en {negocio}",
+        "Un vistazo a cómo acompañamos tu proceso",
+        "Haz una foto de tu progreso de hoy"
+      ],
+      persona: [
+        "Detrás de cada sesión hay alguien que escucha primero",
+        "Hoy te presentamos a quien te acompaña en {negocio}",
+        "Una cara conocida te espera en {negocio}"
+      ],
+      pregunta: [
+        "¿Cómo te sientes hoy?",
+        "¿Qué es lo que más te cuesta sostener?"
+      ],
+      confianza: [
+        "Llevamos tiempo acompañando el mismo tipo de procesos",
+        "En {negocio} no prometemos resultados de un día para otro",
+        "La constancia también se acompaña, no se exige"
+      ]
+    },
+    footers: [
+      "📍 {negocio} · Pide tu cita",
+      "Primera sesión de valoración",
+      "Plazas limitadas esta semana",
+      "Escríbenos por WhatsApp",
+      "Planes disponibles este mes",
+      "Te acompañamos en el proceso",
+      "Consulta disponibilidad hoy",
+      "Empieza cuando estés listo",
+      "Sesiones individuales y en grupo"
+    ],
+    captionsByFamily: {
+      producto: ["Hoy tenemos lugar para tu sesión. Reserva en {negocio} y empieza cuando quieras."],
+      proceso: ["Un vistazo a cómo acompañamos cada proceso en {negocio}."],
+      persona: ["Detrás de cada sesión en {negocio} hay alguien que escucha antes de proponer nada."],
+      pregunta: ["¿Cómo te sientes hoy? Cuéntanos y vemos juntos por dónde empezar."],
+      confianza: ["No prometemos resultados de un día para otro. Así trabajamos en {negocio}."]
+    }
+  },
+  profesionales: {
+    pattern: 'grid',
+    label: 'Servicios Profesionales', icon: '💼', accent: '#5590c9',
+    font: "'Playfair Display', serif", fontWeight: 700, fontStyle: 'normal',
+    keywords: ['asesoria','asesoría','abogado','abogada','gestoria','gestoría','contable','consultoria','consultoría','notario','notaria','asesor','asesora','despacho','fiscal','laboral','juridico','jurídico'],
+    openersByFamily: {
+      producto: [
+        "Hoy podemos resolver tu consulta en {negocio}",
+        "Esto es lo que hacemos en {negocio}",
+        "Un trámite menos en tu lista, hoy mismo"
+      ],
+      proceso: [
+        "Así trabajamos cada caso en {negocio}",
+        "Un vistazo a cómo resolvemos tu trámite"
+      ],
+      persona: [
+        "Detrás de cada caso hay alguien que lo sigue de cerca",
+        "Hoy te presentamos a quien lleva tu consulta en {negocio}"
+      ],
+      pregunta: [
+        "¿Qué trámite llevas postergando?",
+        "¿Tienes una duda que nadie te ha sabido explicar bien?"
+      ],
+      confianza: [
+        "Llevamos años resolviendo el mismo tipo de casos",
+        "En {negocio} no hay letra pequeña",
+        "La tranquilidad de tenerlo todo en regla, sin sorpresas"
+      ]
+    },
+    footers: [
+      "📍 {negocio} · Primera consulta gratuita",
+      "Escríbenos y te llamamos",
+      "Respuesta en 24 horas",
+      "Pide cita sin compromiso",
+      "Te asesoramos antes de decidir",
+      "Contacta con nosotros hoy",
+      "Consulta tu caso hoy mismo",
+      "Atención también online"
+    ],
+    captionsByFamily: {
+      producto: ["Hoy podemos ayudarte con eso que llevas postergando. Escríbenos en {negocio}."],
+      proceso: ["Así trabajamos cada caso, paso a paso, en {negocio}."],
+      persona: ["Detrás de cada consulta en {negocio} hay alguien que la sigue de cerca, no un número más."],
+      pregunta: ["¿Qué trámite llevas postergando? Cuéntanos y vemos cómo resolverlo."],
+      confianza: ["En {negocio} no hay letra pequeña. Así trabajamos, siempre."]
+    }
+  },
+  hogar: {
+    pattern: 'stripes',
+    label: 'Hogar y Reformas', icon: '🔧', accent: '#c9863b',
+    font: "'DM Sans', sans-serif", fontWeight: 700, fontStyle: 'normal',
+    keywords: ['electricista','fontanero','fontaneria','fontanería','pintor','reforma','reformas','carpintero','carpinteria','carpintería','cerrajero','albañil','construccion','construcción','instalador','climatizacion','climatización','obra'],
+    openersByFamily: {
+      producto: [
+        "Hoy tenemos disponibilidad para tu arreglo en {negocio}",
+        "Esto es lo que resolvemos hoy en {negocio}"
+      ],
+      proceso: [
+        "Así dejamos cada trabajo en {negocio}",
+        "Un vistazo a cómo trabajamos, paso a paso",
+        "Haz una foto del antes, nosotros nos encargamos del después"
+      ],
+      persona: [
+        "Detrás de cada arreglo hay alguien que lo cuida como propio",
+        "Hoy te presentamos a quien trabaja en {negocio}"
+      ],
+      pregunta: [
+        "¿Qué arreglo llevas postergando?",
+        "¿Hay algo en tu casa que necesita una mano?"
+      ],
+      confianza: [
+        "Llevamos años haciendo el mismo trabajo, con la misma seriedad",
+        "En {negocio} no dejamos nada a medias",
+        "Puntuales, claros, sin sorpresas en la factura"
+      ]
+    },
+    footers: [
+      "📍 {negocio} · Presupuesto gratis",
+      "Disponibilidad esta semana",
+      "Llámanos o escríbenos por WhatsApp",
+      "Trabajo garantizado",
+      "Urgencias atendidas hoy",
+      "Pide tu presupuesto sin compromiso",
+      "Servicio a domicilio",
+      "Consulta disponibilidad ahora"
+    ],
+    captionsByFamily: {
+      producto: ["Hoy tenemos disponibilidad para ese arreglo que llevas postergando. Escríbenos en {negocio}."],
+      proceso: ["Un vistazo a cómo dejamos cada trabajo en {negocio}, antes y después."],
+      persona: ["Detrás de cada arreglo en {negocio} hay alguien que lo trata como si fuera su propia casa."],
+      pregunta: ["¿Qué arreglo llevas postergando? Cuéntanos y te damos presupuesto hoy mismo."],
+      confianza: ["Puntuales, claros y sin sorpresas en la factura. Así trabajamos en {negocio}."]
+    }
+  },
+  mascotas: {
+    pattern: 'dots',
+    label: 'Mascotas', icon: '🐾', accent: '#a67c52',
+    font: "'Fraunces', serif", fontWeight: 700, fontStyle: 'normal',
+    keywords: ['veterinaria','veterinario','peluqueria canina','peluquería canina','mascota','mascotas','perro','perros','gato','gatos','petshop','tienda de animales','adiestrador','adiestramiento','residencia canina'],
+    openersByFamily: {
+      producto: [
+        "Hoy tenemos cita disponible en {negocio}",
+        "Esto es lo que puedes reservar hoy para tu compañero"
+      ],
+      proceso: [
+        "Así cuidamos a cada mascota que pasa por {negocio}",
+        "Un vistazo a cómo trabajamos en {negocio}"
+      ],
+      persona: [
+        "Detrás de cada visita hay alguien que los trata con cariño de verdad",
+        "Hoy te presentamos a quien cuida a tu compañero en {negocio}"
+      ],
+      pregunta: [
+        "¿Cómo se llama tu compañero?",
+        "¿Hace cuánto no le haces una revisión?"
+      ],
+      confianza: [
+        "Llevamos tiempo cuidando mascotas como si fueran propias",
+        "En {negocio} cada visita es con el mismo cariño"
+      ]
+    },
+    footers: [
+      "📍 {negocio} · Pide cita",
+      "Urgencias atendidas",
+      "Escríbenos por WhatsApp",
+      "Primera consulta con descuento",
+      "Disponibilidad esta semana",
+      "Te esperamos en {negocio}",
+      "Consulta disponibilidad hoy",
+      "Atención también los fines de semana"
+    ],
+    captionsByFamily: {
+      producto: ["Hoy tenemos cita disponible para tu compañero. Reserva en {negocio}."],
+      proceso: ["Un vistazo a cómo cuidamos a cada mascota que pasa por {negocio}."],
+      persona: ["Detrás de cada visita en {negocio} hay alguien que trata a tu mascota como propia."],
+      pregunta: ["¿Hace cuánto no le haces una revisión? En {negocio} tenemos hueco esta semana."],
+      confianza: ["Cuidamos a cada mascota que pasa por {negocio} con el mismo cariño, siempre."]
+    }
+  },
+  educacion: {
+    pattern: 'grid',
+    label: 'Educación', icon: '📚', accent: '#7a6bc9',
+    font: "'Playfair Display', serif", fontWeight: 700, fontStyle: 'normal',
+    keywords: ['academia','clases particulares','profesor','profesora','autoescuela','formacion','formación','curso','cursos','idiomas','ingles','inglés','refuerzo escolar','oposiciones','tutor','tutoria','tutoría'],
+    openersByFamily: {
+      producto: [
+        "Hoy tenemos plazas disponibles en {negocio}",
+        "Esto es lo que puedes empezar hoy en {negocio}"
+      ],
+      proceso: [
+        "Así trabajamos cada clase en {negocio}",
+        "Un vistazo a cómo enseñamos en {negocio}"
+      ],
+      persona: [
+        "Detrás de cada clase hay alguien que se toma tu progreso en serio",
+        "Hoy te presentamos a quien enseña en {negocio}"
+      ],
+      pregunta: [
+        "¿Qué es lo que más te cuesta?",
+        "¿Hace cuánto quieres retomar esto?"
+      ],
+      confianza: [
+        "Llevamos tiempo enseñando de la misma manera, con los mismos resultados",
+        "En {negocio} nadie se queda con la duda"
+      ]
+    },
+    footers: [
+      "📍 {negocio} · Plazas limitadas",
+      "Clase de prueba gratuita",
+      "Escríbenos para más información",
+      "Grupos reducidos disponibles",
+      "Empieza cuando quieras",
+      "Consulta horarios disponibles",
+      "Clases online y presenciales",
+      "Primera clase sin compromiso"
+    ],
+    captionsByFamily: {
+      producto: ["Hoy tenemos plazas disponibles. Escríbenos y empieza cuando quieras en {negocio}."],
+      proceso: ["Un vistazo a cómo trabajamos cada clase en {negocio}."],
+      persona: ["Detrás de cada clase en {negocio} hay alguien que se toma tu progreso en serio."],
+      pregunta: ["¿Qué es lo que más te cuesta? Cuéntanos y armamos un plan para ti."],
+      confianza: ["Enseñamos de la misma manera desde siempre, y los resultados se notan. Así es {negocio}."]
+    }
+  },
+  automocion: {
+    pattern: 'stripes',
+    label: 'Automoción', icon: '🚗', accent: '#4a7ba6',
+    font: "'DM Sans', sans-serif", fontWeight: 700, fontStyle: 'normal',
+    keywords: ['taller','mecanico','mecánico','coches','neumaticos','neumáticos','lavado de coches','chapa y pintura','revision','revisión','itv','automocion','automoción','recambios'],
+    openersByFamily: {
+      producto: [
+        "Hoy tenemos lugar para revisar tu coche en {negocio}",
+        "Esto es lo que resolvemos hoy en {negocio}"
+      ],
+      proceso: [
+        "Así revisamos cada coche que entra a {negocio}",
+        "Un vistazo a cómo trabajamos en {negocio}"
+      ],
+      persona: [
+        "Detrás de cada revisión hay alguien que lo trata como propio",
+        "Hoy te presentamos a quien trabaja en {negocio}"
+      ],
+      pregunta: [
+        "¿Hace cuánto no le haces una revisión a tu coche?",
+        "¿Ese ruido raro sigue ahí?"
+      ],
+      confianza: [
+        "Llevamos años revisando coches con el mismo cuidado",
+        "En {negocio} el diagnóstico siempre es honesto"
+      ]
+    },
+    footers: [
+      "📍 {negocio} · Presupuesto sin compromiso",
+      "Cita previa disponible",
+      "Recogemos tu coche si lo necesitas",
+      "Trabajo garantizado",
+      "Escríbenos por WhatsApp",
+      "Disponibilidad esta semana",
+      "Revisión express disponible",
+      "Consulta sin compromiso"
+    ],
+    captionsByFamily: {
+      producto: ["Hoy tenemos lugar para revisar tu coche. Pide cita en {negocio}."],
+      proceso: ["Un vistazo a cómo revisamos cada coche que entra a {negocio}."],
+      persona: ["Detrás de cada revisión en {negocio} hay alguien que trata tu coche como propio."],
+      pregunta: ["¿Ese ruido raro sigue ahí? En {negocio} lo revisamos hoy mismo."],
+      confianza: ["El diagnóstico siempre es honesto en {negocio}, sin vender de más."]
+    }
+  },
+  eventos: {
+    pattern: 'dots',
+    label: 'Eventos y Creatividad', icon: '📷', accent: '#c95f8f',
+    font: "'Cormorant Garamond', serif", fontWeight: 700, fontStyle: 'italic',
+    keywords: ['fotografia','fotografía','fotografo','fotógrafo','diseño','decoracion','decoración','floristeria','floristería','eventos','bodas','musica','música','dj','videografo','videógrafo','wedding planner'],
+    openersByFamily: {
+      producto: [
+        "Hoy tenemos fechas disponibles en {negocio}",
+        "Esto es lo que puedes reservar hoy en {negocio}"
+      ],
+      proceso: [
+        "Así preparamos cada detalle en {negocio}",
+        "Un vistazo a cómo armamos cada proyecto"
+      ],
+      persona: [
+        "Detrás de cada evento hay alguien que cuida cada detalle",
+        "Hoy te presentamos a quien está detrás de {negocio}"
+      ],
+      pregunta: [
+        "¿Qué fecha tienes en mente?",
+        "¿Cómo te imaginas ese día?"
+      ],
+      confianza: [
+        "Llevamos tiempo cuidando los mismos detalles, proyecto a proyecto",
+        "En {negocio} nada queda librado al azar"
+      ]
+    },
+    footers: [
+      "📍 {negocio} · Consulta disponibilidad",
+      "Reserva tu fecha",
+      "Escríbenos para presupuesto",
+      "Agenda limitada este mes",
+      "Portfolio disponible bajo pedido",
+      "Hablemos de tu proyecto",
+      "Fechas disponibles este trimestre",
+      "Primera reunión sin compromiso"
+    ],
+    captionsByFamily: {
+      producto: ["Hoy tenemos fechas disponibles. Escríbenos y reserva la tuya en {negocio}."],
+      proceso: ["Un vistazo a cómo preparamos cada detalle en {negocio}."],
+      persona: ["Detrás de cada evento en {negocio} hay alguien que cuida cada detalle, incluso los que no se ven."],
+      pregunta: ["¿Cómo te imaginas ese día? Cuéntanos y lo hacemos realidad."],
+      confianza: ["En {negocio} nada queda librado al azar. Proyecto a proyecto, siempre igual de cuidado."]
+    }
+  },
+  general: {
+    pattern: 'blobs',
+    label: 'General', icon: '🏪', accent: '#c8a96e',
+    font: "'DM Sans', sans-serif", fontWeight: 700, fontStyle: 'normal',
+    openersByFamily: {
+      producto: [
+        "Hoy tenemos algo para ti en {negocio}",
+        "Esto es lo nuevo en {negocio}"
+      ],
+      proceso: [
+        "Un vistazo a cómo trabajamos en {negocio}",
+        "Así preparamos lo que hoy te mostramos"
+      ],
+      persona: [
+        "Detrás de {negocio} hay alguien que se toma esto en serio",
+        "Hoy te presentamos a quien está detrás de {negocio}"
+      ],
+      pregunta: [
+        "¿Qué te gustaría ver más por aquí?",
+        "¿Hace cuánto no pasas por {negocio}?"
+      ],
+      confianza: [
+        "Llevamos tiempo haciendo las cosas de la misma manera",
+        "En {negocio} cada cliente importa de verdad"
+      ]
+    },
+    footers: [
+      "📍 {negocio} · Contáctanos",
+      "Escríbenos para más información",
+      "Síguenos para más novedades",
+      "Estamos para ayudarte",
+      "Consulta disponibilidad",
+      "Hablemos por DM",
+      "Escríbenos, respondemos rápido",
+      "Consulta sin compromiso"
+    ],
+    captionsByFamily: {
+      producto: ["Hoy tenemos algo nuevo para ti. Escríbenos y te contamos más sobre {negocio}."],
+      proceso: ["Un vistazo a cómo trabajamos cada día en {negocio}."],
+      persona: ["Detrás de {negocio} hay alguien que se toma esto en serio, todos los días."],
+      pregunta: ["¿Qué te gustaría ver más por aquí? Te leemos."],
+      confianza: ["Seguimos haciendo las cosas de la misma manera en {negocio}, con el mismo cuidado de siempre."]
+    }
+  }
+};
+
+const FONT_OPTIONS = [
+  { key: 'auto',       label: 'Automática (según sector)' },
+  { key: 'fraunces',   label: 'Fraunces — cálida',     css: "'Fraunces', serif",           weight: 700, style: 'normal' },
+  { key: 'cormorant',  label: 'Cormorant — elegante',  css: "'Cormorant Garamond', serif",  weight: 700, style: 'italic' },
+  { key: 'playfair',   label: 'Playfair — editorial',  css: "'Playfair Display', serif",    weight: 800, style: 'normal' },
+  { key: 'dmsans',     label: 'DM Sans — moderna',     css: "'DM Sans', sans-serif",         weight: 700, style: 'normal' }
+];
+
+const COLOR_SWATCHES = ['#d9714e', '#b98bb0', '#c8a96e', '#5590e0', '#55b87a', '#e05555'];
+
+// ─── ESTADO ─────────────────────────────────────────────────────────────────
+const state = {
+  format: 'historia',
+  familyIndex: 0,
+  ideaUsedToday: false,
+  photoScale: 1,
+  photoOffsetX: 0,
+  photoOffsetY: 0,
+  sector: 'general',
+  accentColor: SECTORES.general.accent,
+  textColorMode: 'auto',
+  customTextColor: '#ffffff',
+  position: 'bottom',
+  fontKey: 'auto',
+  photoImg: null,
+  usedIndices: {}
+};
+
+// ─── UI INIT ────────────────────────────────────────────────────────────────
+function buildSectorGrid() {
+  const grid = document.getElementById('sectorGrid');
+  grid.innerHTML = Object.entries(SECTORES).map(([key, r]) => `
+    <button class="sector-btn ${key === state.sector ? 'selected' : ''}" data-sector="${key}">
+      <span class="icon">${r.icon}</span>${r.label}
+    </button>
+  `).join('');
+  grid.querySelectorAll('.sector-btn').forEach(btn => {
+    btn.addEventListener('click', () => selectSector(btn.dataset.sector));
+  });
+}
+
+function selectSector(key, opts = {}) {
+  state.sector = key;
+  state.accentColor = SECTORES[key].accent;
+  document.querySelectorAll('.sector-btn').forEach(b => b.classList.toggle('selected', b.dataset.sector === key));
+  document.querySelectorAll('#colorRow .swatch').forEach(s => s.classList.toggle('selected', s.dataset.color.toLowerCase() === state.accentColor.toLowerCase()));
+  if (!opts.silent) renderCanvas();
+}
+
+// Detección del sector a partir de texto libre, sin IA: coincidencia por palabras clave.
+// Se queda con la palabra clave más específica (más larga), no la primera que aparezca,
+// para evitar falsos positivos como "peluquería canina" -> Belleza en vez de Mascotas.
+function detectSector(text) {
+  const t = text.toLowerCase().trim();
+  if (!t) return null;
+  let best = null, bestLen = 0;
+  for (const [key, r] of Object.entries(SECTORES)) {
+    if (!r.keywords) continue;
+    for (const k of r.keywords) {
+      if (t.includes(k) && k.length > bestLen) {
+        best = key;
+        bestLen = k.length;
+      }
+    }
+  }
+  return best;
+}
+
+const sectorGridEl = document.getElementById('sectorGrid');
+document.getElementById('toggleSectorGrid').addEventListener('click', () => {
+  const isHidden = sectorGridEl.style.display === 'none';
+  sectorGridEl.style.display = isHidden ? 'grid' : 'none';
+  document.getElementById('toggleSectorGrid').textContent = isHidden ? 'Ocultar la lista' : 'Prefiero elegir de una lista';
+});
+
+let detectTimeout = null;
+document.getElementById('sectorText').addEventListener('input', e => {
+  clearTimeout(detectTimeout);
+  const text = e.target.value;
+  detectTimeout = setTimeout(() => {
+    const hint = document.getElementById('sectorHint');
+    if (!text.trim()) {
+      hint.textContent = 'Escribe tu actividad y elegimos el estilo de frases por ti.';
+      saveProfile();
+      return;
+    }
+    const match = detectSector(text);
+    if (match) {
+      selectSector(match);
+      hint.textContent = `Detectado: ${SECTORES[match].label} ✓`;
+    } else {
+      selectSector('general');
+      hint.textContent = 'No encontramos una categoría exacta — usando frases generales.';
+      sectorGridEl.style.display = 'grid';
+      document.getElementById('toggleSectorGrid').textContent = 'Ocultar la lista';
+    }
+    saveProfile();
+  }, 400);
+});
+
+function buildColorRow() {
+  const row = document.getElementById('colorRow');
+  row.innerHTML = COLOR_SWATCHES.map(c => `<div class="swatch ${c === state.accentColor ? 'selected' : ''}" data-color="${c}" style="background:${c}"></div>`).join('')
+    + `<input type="color" class="color-custom" id="customColor" value="${state.accentColor}">`;
+  row.querySelectorAll('.swatch').forEach(sw => {
+    sw.addEventListener('click', () => {
+      state.accentColor = sw.dataset.color;
+      row.querySelectorAll('.swatch').forEach(s => s.classList.remove('selected'));
+      sw.classList.add('selected');
+      renderCanvas();
+      saveProfile();
+    });
+  });
+  document.getElementById('customColor').addEventListener('input', e => {
+    state.accentColor = e.target.value;
+    row.querySelectorAll('.swatch').forEach(s => s.classList.remove('selected'));
+    renderCanvas();
+    saveProfile();
+  });
+}
+
+function buildTextColorRow() {
+  const row = document.getElementById('textColorRow');
+  const modeSelected = m => state.textColorMode === m ? 'selected' : '';
+  row.innerHTML = `
+    <button type="button" class="format-btn ${modeSelected('auto')}" data-textmode="auto" style="padding:8px 12px;">Automático</button>
+    <div class="swatch ${modeSelected('white')}" data-textmode="white" style="background:#ffffff; border:1px solid var(--border-hover);"></div>
+    <div class="swatch ${modeSelected('black')}" data-textmode="black" style="background:#0a0a0f;"></div>
+    <input type="color" class="color-custom" id="customTextColor" value="${state.customTextColor}">
+  `;
+  row.querySelectorAll('[data-textmode]').forEach(el => {
+    el.addEventListener('click', () => {
+      state.textColorMode = el.dataset.textmode;
+      row.querySelectorAll('[data-textmode]').forEach(s => s.classList.remove('selected'));
+      el.classList.add('selected');
+      renderCanvas();
+      saveProfile();
+    });
+  });
+  document.getElementById('customTextColor').addEventListener('input', e => {
+    state.customTextColor = e.target.value;
+    state.textColorMode = 'custom';
+    row.querySelectorAll('[data-textmode]').forEach(s => s.classList.remove('selected'));
+    renderCanvas();
+    saveProfile();
+  });
+}
+
+function buildFontSelect() {
+  const sel = document.getElementById('fontSelect');
+  sel.innerHTML = FONT_OPTIONS.map(f => `<option value="${f.key}">${f.label}</option>`).join('');
+  sel.addEventListener('change', e => { state.fontKey = e.target.value; renderCanvas(); saveProfile(); });
+}
+
+function applyFormat(key) {
+  state.format = key;
+  const f = FORMATS[key];
+  const canvas = document.getElementById('storyCanvas');
+  canvas.width = f.width;
+  canvas.height = f.height;
+  document.querySelector('.canvas-wrap').style.aspectRatio = `${f.width} / ${f.height}`;
+  document.querySelectorAll('#formatGrid .format-btn').forEach(b => b.classList.toggle('selected', b.dataset.format === key));
+  renderCanvas();
+}
+
+document.querySelectorAll('#formatGrid .format-btn').forEach(btn => {
+  btn.addEventListener('click', () => { applyFormat(btn.dataset.format); saveProfile(); });
+});
+
+document.querySelectorAll('.pos-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    state.position = btn.dataset.pos;
+    document.querySelectorAll('.pos-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    renderCanvas();
+    saveProfile();
+  });
+});
+
+document.getElementById('businessName').addEventListener('input', () => { renderCanvas(); saveProfile(); });
+document.getElementById('mainPhrase').addEventListener('input', renderCanvas);
+document.getElementById('footerPhrase').addEventListener('input', renderCanvas);
+
+// ─── SUBIDA DE FOTO (100% local, sin servidor) ─────────────────────────────
+const dropZone = document.getElementById('dropZone');
+const imageInput = document.getElementById('imageInput');
+
+dropZone.addEventListener('click', () => imageInput.click());
+imageInput.addEventListener('change', e => { if (e.target.files[0]) handlePhotoFile(e.target.files[0]); });
+
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+dropZone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropZone.classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if (file && file.type.startsWith('image/')) handlePhotoFile(file);
+});
+
+function handlePhotoFile(file) {
+  if (!file.type.startsWith('image/')) {
+    toast('Ese archivo no es una imagen — prueba con una foto', 'error');
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      state.photoImg = img;
+      state.photoScale = 1;
+      state.photoOffsetX = 0;
+      state.photoOffsetY = 0;
+      document.getElementById('zoomSlider').value = 100;
+      document.getElementById('zoomControl').style.display = 'flex';
+      document.getElementById('storyCanvas').style.cursor = 'grab';
+      dropZone.innerHTML = `<span class="icon">✓</span>Foto cargada · toca para cambiarla`;
+      renderCanvas();
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+document.getElementById('zoomSlider').addEventListener('input', e => {
+  state.photoScale = Number(e.target.value) / 100;
+  renderCanvas();
+});
+
+// ─── BANCO DE FRASES: SELECCIÓN SIN REPETIR ────────────────────────────────
+function pickFromBank(type) {
+  const arr = SECTORES[state.sector][type];
+  const usedKey = state.sector + ':' + type;
+  if (!state.usedIndices[usedKey]) state.usedIndices[usedKey] = [];
+  let used = state.usedIndices[usedKey];
+  if (used.length >= arr.length) used = [];
+  let idx;
+  do { idx = Math.floor(Math.random() * arr.length); } while (used.includes(idx));
+  used.push(idx);
+  state.usedIndices[usedKey] = used;
+  return arr[idx];
+}
+
+// Igual que pickFromBank, pero eligiendo dentro de la familia del día (Producto, Proceso...),
+// no de todo el banco mezclado — así la frase de verdad corresponde a la idea que se mostró.
+function pickFromBankByFamily(type, familyKey) {
+  const sector = SECTORES[state.sector];
+  const bank = sector[type + 'ByFamily'];
+  const arr = (bank && bank[familyKey]) ? bank[familyKey] : sector[type === 'openers' ? 'openers' : 'captions'];
+  const usedKey = state.sector + ':' + type + ':' + familyKey;
+  if (!state.usedIndices[usedKey]) state.usedIndices[usedKey] = [];
+  let used = state.usedIndices[usedKey];
+  if (used.length >= arr.length) used = [];
+  let idx;
+  do { idx = Math.floor(Math.random() * arr.length); } while (used.includes(idx));
+  used.push(idx);
+  state.usedIndices[usedKey] = used;
+  return arr[idx];
+}
+
+function fillTemplate(str) {
+  const name = document.getElementById('businessName').value.trim() || 'nuestro negocio';
+  return str.replace(/\{negocio\}/g, name);
+}
+
+function generateAuto() {
+  const familyKey = getCurrentFamily().key;
+  const main = fillTemplate(pickFromBankByFamily('openers', familyKey));
+  const footer = fillTemplate(pickFromBank('footers'));
+  const caption = fillTemplate(pickFromBankByFamily('captions', familyKey));
+  document.getElementById('mainPhrase').value = main;
+  document.getElementById('footerPhrase').value = footer;
+  document.getElementById('captionText').value = caption;
+  renderCanvas();
+  toast('Publicación de hoy lista ✦', 'success');
+  markIdeaAsUsed();
+  saveProfile();
+}
+
+document.getElementById('createBtn').addEventListener('click', () => {
+  generateAuto();
+  document.querySelector('.canvas-wrap').scrollIntoView({ behavior: 'smooth', block: 'center' });
+});
+
+document.getElementById('nextIdeaBtn').addEventListener('click', () => {
+  state.familyIndex = (state.familyIndex + 1) % FAMILIES.length;
+  state.ideaUsedToday = false;
+  updateIdeaCard();
+  saveProfile();
+});
+
+// ─── DIBUJO DEL CANVAS ──────────────────────────────────────────────────────
+function hexToRgb(hex) {
+  hex = hex.replace('#', '');
+  if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+  const num = parseInt(hex, 16);
+  return { r: (num >> 16) & 255, g: (num >> 8) & 255, b: num & 255 };
+}
+function hexToRgba(hex, alpha) {
+  const { r, g, b } = hexToRgb(hex);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+function getContrastText(hex) {
+  const { r, g, b } = hexToRgb(hex);
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  return luminance > 0.6 ? '#0a0a0f' : '#ffffff';
+}
+
+function shadeColor(hex, percent) {
+  const { r, g, b } = hexToRgb(hex);
+  const amt = Math.round(2.55 * percent);
+  const clamp = v => Math.min(255, Math.max(0, v));
+  return `rgb(${clamp(r + amt)},${clamp(g + amt)},${clamp(b + amt)})`;
+}
+
+// Dibuja un patrón decorativo sutil sobre el degradado, según el estilo del sector.
+// Todo con matemática fija (sin Math.random) para que no "salte" entre reprocesos.
+function drawPattern(ctx, W, H, pattern) {
+  switch (pattern) {
+    case 'blobs': {
+      const blobs = [[0.2, 0.16, 0.34], [0.86, 0.28, 0.28], [0.14, 0.82, 0.32], [0.78, 0.88, 0.26]];
+      blobs.forEach(([bx, by, br]) => {
+        const r = W * br;
+        const g = ctx.createRadialGradient(W * bx, H * by, 0, W * bx, H * by, r);
+        g.addColorStop(0, 'rgba(255,255,255,0.16)');
+        g.addColorStop(1, 'rgba(255,255,255,0)');
+        ctx.fillStyle = g;
+        ctx.beginPath(); ctx.arc(W * bx, H * by, r, 0, Math.PI * 2); ctx.fill();
+      });
+      break;
+    }
+    case 'rings': {
+      const centers = [[0.24, 0.20], [0.80, 0.62], [0.30, 0.86]];
+      centers.forEach(([cx, cy]) => {
+        for (let k = 0; k < 3; k++) {
+          ctx.beginPath();
+          ctx.lineWidth = 2;
+          ctx.strokeStyle = `rgba(255,255,255,${0.18 - k * 0.045})`;
+          ctx.arc(W * cx, H * cy, W * (0.10 + k * 0.06), 0, Math.PI * 2);
+          ctx.stroke();
+        }
+      });
+      break;
+    }
+    case 'stripes': {
+      ctx.save();
+      ctx.translate(W / 2, H / 2); ctx.rotate(-0.35); ctx.translate(-W / 2, -H / 2);
+      const gap = W * 0.12;
+      ctx.fillStyle = 'rgba(255,255,255,0.07)';
+      for (let x = -H; x < W + H; x += gap) ctx.fillRect(x, -H, gap * 0.45, H * 3);
+      ctx.restore();
+      break;
+    }
+    case 'dots': {
+      const gap = W * 0.09;
+      ctx.fillStyle = 'rgba(255,255,255,0.11)';
+      for (let y = gap / 2; y < H; y += gap) {
+        for (let x = gap / 2; x < W; x += gap) {
+          ctx.beginPath(); ctx.arc(x, y, W * 0.007, 0, Math.PI * 2); ctx.fill();
+        }
+      }
+      break;
+    }
+    case 'grid': {
+      ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+      ctx.lineWidth = 1;
+      const gap = W * 0.09;
+      for (let x = 0; x <= W; x += gap) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+      for (let y = 0; y <= H; y += gap) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+      break;
+    }
+    case 'waves': {
+      ctx.strokeStyle = 'rgba(255,255,255,0.13)';
+      ctx.lineWidth = 2;
+      for (let row = 0; row < 6; row++) {
+        const baseY = H * (0.10 + row * 0.16);
+        ctx.beginPath();
+        for (let x = 0; x <= W; x += 12) {
+          const y = baseY + Math.sin((x / W) * Math.PI * 3 + row) * H * 0.02;
+          if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      }
+      break;
+    }
+  }
+}
+
+// Fondo generado para cuando no hay foto: degradado con el color elegido + patrón del sector.
+// Queda como una publicación terminada, no como un cartel de "falta subir algo".
+function drawGeneratedBackground(ctx, W, H) {
+  const sector = SECTORES[state.sector] || SECTORES.general;
+  const accent = state.accentColor;
+
+  const grad = ctx.createLinearGradient(0, 0, W, H);
+  grad.addColorStop(0, shadeColor(accent, 16));
+  grad.addColorStop(1, shadeColor(accent, -32));
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, H);
+
+  ctx.save();
+  drawPattern(ctx, W, H, sector.pattern || 'blobs');
+  ctx.restore();
+}
+
+function drawBackground(ctx, W, H) {
+  if (state.photoImg) {
+    const r = getPhotoDrawRect(W, H);
+    ctx.drawImage(state.photoImg, r.dx, r.dy, r.dw, r.dh);
+  } else {
+    drawGeneratedBackground(ctx, W, H);
+  }
+}
+
+function wrapLines(ctx, text, maxWidth) {
+  const words = text.split(' ');
+  const lines = [];
+  let current = '';
+  words.forEach(word => {
+    const test = current ? current + ' ' + word : word;
+    if (ctx.measureText(test).width > maxWidth && current) {
+      lines.push(current);
+      current = word;
+    } else {
+      current = test;
+    }
+  });
+  if (current) lines.push(current);
+  return lines;
+}
+
+// Calcula el rectángulo de dibujo de la foto según el zoom y el desplazamiento actuales.
+// Además ajusta (clampa) el desplazamiento para que la foto siempre cubra todo el canvas.
+function getPhotoDrawRect(W, H) {
+  const img = state.photoImg;
+  const baseScale = Math.max(W / img.width, H / img.height);
+  const scale = baseScale * state.photoScale;
+  const dw = img.width * scale;
+  const dh = img.height * scale;
+
+  const maxOffsetX = Math.max(0, (dw - W) / 2);
+  const maxOffsetY = Math.max(0, (dh - H) / 2);
+  state.photoOffsetX = Math.min(maxOffsetX, Math.max(-maxOffsetX, state.photoOffsetX));
+  state.photoOffsetY = Math.min(maxOffsetY, Math.max(-maxOffsetY, state.photoOffsetY));
+
+  const dx = W / 2 - dw / 2 + state.photoOffsetX;
+  const dy = H / 2 - dh / 2 + state.photoOffsetY;
+  return { dw, dh, dx, dy };
+}
+
+// Mide el brillo promedio de una zona del canvas ya dibujado, para que el modo
+// "Automático" elija texto blanco o negro según lo que realmente hay debajo.
+function sampleZoneBrightness(ctx, x, y, w, h) {
+  x = Math.max(0, Math.round(x)); y = Math.max(0, Math.round(y));
+  w = Math.max(1, Math.round(w)); h = Math.max(1, Math.round(h));
+  const data = ctx.getImageData(x, y, w, h).data;
+  let total = 0, count = 0;
+  for (let i = 0; i < data.length; i += 4 * 41) {
+    total += 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+    count++;
+  }
+  return count ? (total / count) / 255 : 0.35;
+}
+
+function getLuminance(hex) {
+  const { r, g, b } = hexToRgb(hex);
+  return (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+}
+
+function renderCanvas() {
+  const canvas = document.getElementById('storyCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const accent = state.accentColor;
+
+  ctx.clearRect(0, 0, W, H);
+  drawBackground(ctx, W, H);
+
+  // Tinte general con el color elegido, para que la foto "vaya acorde"
+  ctx.fillStyle = hexToRgba(accent, 0.14);
+  ctx.fillRect(0, 0, W, H);
+
+  const mainPhrase = document.getElementById('mainPhrase').value.trim();
+  const footerPhrase = document.getElementById('footerPhrase').value.trim();
+
+  // Zonas según posición elegida
+  const zones = { top: H * 0.16, middle: H * 0.5, bottom: H * 0.7 };
+  const mainY = zones[state.position];
+
+  // Fuente del texto principal
+  let fontCss, fontWeight, fontStyle;
+  if (state.fontKey === 'auto') {
+    const r = SECTORES[state.sector];
+    fontCss = r.font; fontWeight = r.fontWeight; fontStyle = r.fontStyle;
+  } else {
+    const f = FONT_OPTIONS.find(f => f.key === state.fontKey);
+    fontCss = f.css; fontWeight = f.weight; fontStyle = f.style;
+  }
+
+  const fontSize = 62;
+  ctx.font = `${fontStyle === 'italic' ? 'italic ' : ''}${fontWeight} ${fontSize}px ${fontCss}`;
+  const maxWidth = W * 0.82;
+  const lines = mainPhrase ? wrapLines(ctx, mainPhrase, maxWidth) : [];
+  const lineHeight = fontSize * 1.18;
+  const blockHeight = lines.length * lineHeight;
+
+  if (lines.length) {
+    // Zona donde va a caer el texto, para medir su brillo si el modo es Automático
+    const zoneTop = Math.max(0, mainY - blockHeight / 2 - 60);
+    const zoneBottom = Math.min(H, mainY + blockHeight / 2 + 60);
+
+    let textColor;
+    if (state.textColorMode === 'white') textColor = '#ffffff';
+    else if (state.textColorMode === 'black') textColor = '#0a0a0f';
+    else if (state.textColorMode === 'custom') textColor = state.customTextColor;
+    else {
+      // Automático: mide el brillo real del fondo en esa zona y elige el color que mejor se lea
+      const brightness = sampleZoneBrightness(ctx, 0, zoneTop, W, zoneBottom - zoneTop);
+      textColor = brightness > 0.55 ? '#0a0a0f' : '#ffffff';
+    }
+    const isLightText = getLuminance(textColor) > 0.5;
+
+    // Degradado de refuerzo: oscuro detrás de texto claro, claro detrás de texto oscuro
+    const grad = ctx.createLinearGradient(0, zoneTop, 0, zoneBottom);
+    const base = isLightText ? '0,0,0' : '255,255,255';
+    grad.addColorStop(0, `rgba(${base},0)`);
+    grad.addColorStop(0.3, hexToRgba(accent, 0.22));
+    grad.addColorStop(0.5, `rgba(${base},0.55)`);
+    grad.addColorStop(0.7, hexToRgba(accent, 0.22));
+    grad.addColorStop(1, `rgba(${base},0)`);
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, zoneTop, W, zoneBottom - zoneTop);
+
+    ctx.fillStyle = textColor;
+    ctx.textAlign = 'center';
+    ctx.shadowColor = isLightText ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.6)';
+    ctx.shadowBlur = 18;
+    let startY = mainY - blockHeight / 2 + fontSize * 0.75;
+    lines.forEach(line => {
+      ctx.fillText(line, W / 2, startY);
+      startY += lineHeight;
+    });
+    ctx.shadowBlur = 0;
+  }
+
+  // Barra de pie con la frase fija
+  if (footerPhrase) {
+    const barTop = H * 0.87;
+    ctx.fillStyle = hexToRgba(accent, 0.92);
+    ctx.fillRect(0, barTop, W, H - barTop);
+    ctx.fillStyle = getContrastText(accent);
+    ctx.font = "700 34px 'DM Sans', sans-serif";
+    ctx.textAlign = 'center';
+    const footerLines = wrapLines(ctx, footerPhrase, W * 0.86);
+    const footerLineHeight = 42;
+    let fy = barTop + (H - barTop) / 2 - ((footerLines.length - 1) * footerLineHeight) / 2 + 12;
+    footerLines.forEach(line => { ctx.fillText(line, W / 2, fy); fy += footerLineHeight; });
+  }
+
+  // Marco decorativo en el color elegido
+  const pad = 34;
+  ctx.strokeStyle = accent;
+  ctx.lineWidth = 6;
+  ctx.globalAlpha = 0.85;
+  ctx.strokeRect(pad, pad, W - pad * 2, H - pad * 2);
+  ctx.globalAlpha = 1;
+
+  drawDemoWatermark(ctx, W, H);
+}
+
+// Esta función solo existe en la copia de demo embebida en la landing —
+// la app real (la que compra la gente) nunca dibuja marca de agua.
+function drawDemoWatermark(ctx, W, H) {
+  ctx.save();
+  ctx.globalAlpha = 0.16;
+  ctx.fillStyle = getContrastText(state.accentColor) === '#0a0a0f' ? '#0a0a0f' : '#ffffff';
+  ctx.font = "700 26px 'DM Sans', sans-serif";
+  ctx.translate(W / 2, H / 2); ctx.rotate(-0.4); ctx.translate(-W / 2, -H / 2);
+  for (let y = -H; y < H * 2; y += 130) {
+    for (let x = -W; x < W * 2; x += 340) {
+      ctx.fillText('VISTA PREVIA', x, y);
+    }
+  }
+  ctx.restore();
+}
+
+// ─── ARRASTRAR LA FOTO PARA ENCUADRARLA ────────────────────────────────────
+const storyCanvasEl = document.getElementById('storyCanvas');
+storyCanvasEl.style.touchAction = 'none';
+let dragging = false, dragStart = null, startOffset = null;
+
+storyCanvasEl.addEventListener('pointerdown', e => {
+  if (!state.photoImg) return;
+  dragging = true;
+  dragStart = { x: e.clientX, y: e.clientY };
+  startOffset = { x: state.photoOffsetX, y: state.photoOffsetY };
+  storyCanvasEl.setPointerCapture(e.pointerId);
+  storyCanvasEl.style.cursor = 'grabbing';
+});
+
+storyCanvasEl.addEventListener('pointermove', e => {
+  if (!dragging) return;
+  const rect = storyCanvasEl.getBoundingClientRect();
+  const ratio = storyCanvasEl.width / rect.width;
+  state.photoOffsetX = startOffset.x + (e.clientX - dragStart.x) * ratio;
+  state.photoOffsetY = startOffset.y + (e.clientY - dragStart.y) * ratio;
+  renderCanvas();
+});
+
+['pointerup', 'pointercancel', 'pointerleave'].forEach(evt => {
+  storyCanvasEl.addEventListener(evt, () => {
+    dragging = false;
+    storyCanvasEl.style.cursor = state.photoImg ? 'grab' : 'default';
+  });
+});
+
+// ─── EXPORTAR Y COPIAR ──────────────────────────────────────────────────────
+function exportPNG() {
+  renderCanvas();
+  const canvas = document.getElementById('storyCanvas');
+  const name = (document.getElementById('businessName').value || 'publicacion').trim().replace(/\s+/g, '-').toLowerCase();
+  const link = document.createElement('a');
+  link.download = `${name}-${Date.now()}.png`;
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+  toast('Imagen descargada', 'success');
+}
+
+function copyCaption() {
+  const text = document.getElementById('captionText').value;
+  if (!text) { toast('Todavía no hay caption para copiar', 'info'); return; }
+  navigator.clipboard.writeText(text).then(() => toast('Caption copiado al portapapeles', 'success'));
+}
+
+// ─── TOAST ──────────────────────────────────────────────────────────────────
+function toast(msg, type = 'info') {
+  const icons = { success: '✓', error: '✕', info: 'ℹ' };
+  const container = document.getElementById('toastContainer');
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.innerHTML = `<span>${icons[type] || 'ℹ'}</span><span>${msg}</span>`;
+  container.appendChild(el);
+  setTimeout(() => { el.style.opacity = '0'; el.style.transform = 'translateX(120%)'; el.style.transition = '0.3s'; setTimeout(() => el.remove(), 300); }, 3000);
+}
+
+// ─── RECORDAR EL NEGOCIO EN ESTE DISPOSITIVO ───────────────────────────────
+// Así el usuario solo configura su negocio una vez; los próximos días
+// solo tiene que subir la foto y tocar "hazlo tú", como prometemos.
+const PROFILE_KEY = 'publicadorDiario_profile';
+
+function saveProfile() {
+  try {
+    localStorage.setItem(PROFILE_KEY, JSON.stringify({
+      businessName: document.getElementById('businessName').value,
+      sectorText: document.getElementById('sectorText').value,
+      sector: state.sector,
+      accentColor: state.accentColor,
+      position: state.position,
+      fontKey: state.fontKey,
+      format: state.format,
+      familyIndex: state.familyIndex,
+      textColorMode: state.textColorMode,
+      customTextColor: state.customTextColor
+    }));
+    document.getElementById('forgetProfile').style.display = 'block';
+  } catch (e) { /* localStorage no disponible: seguimos sin recordar, sin romper la app */ }
+}
+
+function loadProfile() {
+  try {
+    const raw = localStorage.getItem(PROFILE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+document.getElementById('forgetProfile').addEventListener('click', () => {
+  try { localStorage.removeItem(PROFILE_KEY); } catch (e) {}
+  document.getElementById('businessName').value = '';
+  document.getElementById('sectorText').value = '';
+  document.getElementById('sectorHint').textContent = 'Escribe tu actividad y elegimos el estilo de frases por ti.';
+  document.getElementById('forgetProfile').style.display = 'none';
+  toast('Datos olvidados en este dispositivo', 'info');
+});
+
+// ─── INIT ───────────────────────────────────────────────────────────────────
+buildSectorGrid();
+buildColorRow();
+buildTextColorRow();
+buildFontSelect();
+
+const savedProfile = loadProfile();
+if (savedProfile) {
+  document.getElementById('businessName').value = savedProfile.businessName || '';
+  document.getElementById('sectorText').value = savedProfile.sectorText || '';
+  state.position = savedProfile.position || state.position;
+  state.fontKey = savedProfile.fontKey || state.fontKey;
+  state.accentColor = savedProfile.accentColor || state.accentColor;
+  state.familyIndex = typeof savedProfile.familyIndex === 'number' ? savedProfile.familyIndex : 0;
+  state.textColorMode = savedProfile.textColorMode || 'auto';
+  state.customTextColor = savedProfile.customTextColor || '#ffffff';
+
+  if (savedProfile.sector && SECTORES[savedProfile.sector]) {
+    selectSector(savedProfile.sector, { silent: true });
+    document.getElementById('sectorHint').textContent = `Recordamos que te dedicas a ${SECTORES[savedProfile.sector].label} ✓`;
+  }
+  document.querySelectorAll('.pos-btn').forEach(b => b.classList.toggle('selected', b.dataset.pos === state.position));
+  document.getElementById('fontSelect').value = state.fontKey;
+  document.querySelectorAll('#colorRow .swatch').forEach(s => s.classList.toggle('selected', s.dataset.color.toLowerCase() === state.accentColor.toLowerCase()));
+  const customColorEl = document.getElementById('customColor');
+  if (customColorEl) customColorEl.value = state.accentColor;
+  buildTextColorRow();
+
+  applyFormat(savedProfile.format && FORMATS[savedProfile.format] ? savedProfile.format : 'historia');
+  document.getElementById('forgetProfile').style.display = 'block';
+  if (savedProfile.businessName) {
+    setTimeout(() => toast(`Bienvenido de nuevo, ${savedProfile.businessName} ✦`, 'success'), 400);
+  }
+} else {
+  applyFormat('historia');
+}
+
+updateIdeaCard();
+document.fonts.ready.then(() => renderCanvas());
+
+document.getElementById('demoBuyBtn').addEventListener('click', () => {
+  window.parent.postMessage({ action: 'scrollToPricing' }, '*');
+});
+</script>
+</body>
+</html>
