@@ -397,6 +397,192 @@ input[type="range"]::-moz-range-thumb {
 .toast.success { border-color: rgba(30,122,69,0.4); color: #1e7a45; }
 .toast.error { border-color: rgba(184,48,48,0.4); color: #b83030; }
 .toast.info { border-color: rgba(47,109,196,0.4); color: #2f6dc4; }
+/* ── GRABAR REEL CON TELEPROMPTER ─────────────────────────────────────────
+   Pantalla completa tipo cámara: fondo negro intencionado (no crema) porque
+   es el estándar de cualquier visor de cámara y así el vídeo grabado se ve
+   bien contra el marco de la interfaz. No forma parte del resto de la
+   estética clara de la app. */
+.reel-launch-btn {
+  background: linear-gradient(135deg, #1c1712, #3a2f24);
+  color: #f7f4ef;
+  padding: 12px 14px;
+  font-size: 13.5px;
+}
+.reel-launch-btn:hover { filter: brightness(1.25); transform: translateY(-1px); }
+
+.reel-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: #05050a;
+  z-index: 500;
+  flex-direction: column;
+}
+.reel-overlay.is-open { display: flex; }
+
+.reel-topbar {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  z-index: 5;
+}
+.reel-close-btn {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: rgba(255,255,255,0.14);
+  border: none; color: #fff; font-size: 18px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+}
+.reel-timer {
+  background: rgba(255,255,255,0.14);
+  color: #fff; font-family: 'DM Mono', monospace;
+  font-size: 13px; padding: 6px 12px; border-radius: 20px;
+  letter-spacing: 0.5px;
+}
+.reel-timer.is-rec::before {
+  content: '●'; color: #ff4d4d; margin-right: 6px;
+  animation: reelBlink 1s infinite;
+}
+@keyframes reelBlink { 50% { opacity: 0.2; } }
+
+#reelFlipBtn { display: none; visibility: visible; }
+.reel-overlay.is-camera #reelFlipBtn { display: flex; }
+.reel-overlay.is-review #reelFlipBtn { display: none; }
+
+.reel-camera-wrap {
+  display: none;
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+  background: #000;
+}
+.reel-overlay.is-camera .reel-camera-wrap { display: block; }
+
+.reel-script-panel {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 12px;
+  padding: 74px 20px 24px;
+  color: #fff;
+}
+.reel-overlay.is-camera .reel-script-panel { display: none; }
+.reel-script-title { font-family: 'Fraunces', serif; font-weight: 700; font-size: 19px; }
+.reel-script-hint { font-size: 12.5px; color: rgba(255,255,255,0.6); margin-top: -6px; }
+.reel-script-textarea {
+  flex: 1;
+  resize: none;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.16);
+  border-radius: 14px;
+  padding: 14px;
+  color: #fff;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+}
+.reel-script-textarea:focus { outline: none; border-color: rgba(255,255,255,0.4); }
+.reel-script-meta { font-size: 12px; color: rgba(255,255,255,0.55); text-align: right; }
+
+.reel-video {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1); /* efecto espejo, natural en modo selfie */
+}
+.reel-video.is-review { transform: none; } /* la grabación final no va espejada */
+.reel-video.is-back-camera { transform: none; } /* la cámara trasera no se espeja, como en cualquier app de cámara */
+
+.reel-teleprompter {
+  position: absolute;
+  top: 64px; left: 0; right: 0;
+  height: 40%;
+  overflow: hidden;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 12%, #000 88%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, #000 12%, #000 88%, transparent);
+}
+.reel-teleprompter-track {
+  position: absolute;
+  left: 0; right: 0; top: 100%;
+  padding: 0 26px;
+  text-align: center;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.5;
+  color: #ffffff;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.65);
+  transform: translateY(0);
+  will-change: transform;
+}
+
+.reel-bottombar {
+  display: none;
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 22px 16px 30px;
+  background: linear-gradient(to top, rgba(0,0,0,0.55), transparent);
+}
+.reel-overlay.is-camera .reel-bottombar { display: flex; }
+.reel-hint {
+  color: rgba(255,255,255,0.75);
+  font-size: 12.5px;
+  text-align: center;
+  max-width: 280px;
+}
+.reel-record-btn {
+  width: 74px; height: 74px;
+  border-radius: 50%;
+  border: 4px solid #fff;
+  background: rgba(255,255,255,0.15);
+  cursor: pointer;
+  position: relative;
+  transition: opacity 0.2s;
+}
+.reel-record-btn:disabled { cursor: not-allowed; }
+.reel-record-btn::after {
+  content: '';
+  position: absolute; inset: 8px;
+  border-radius: 50%;
+  background: #ff4d4d;
+  transition: var(--transition);
+}
+.reel-record-btn.is-rec::after { border-radius: 6px; inset: 22px; }
+
+.reel-review-bar {
+  display: none;
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 18px 16px 28px;
+  gap: 10px;
+  background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+}
+.reel-overlay.is-review .reel-review-bar { display: flex; }
+.reel-overlay.is-review .reel-bottombar { display: none; }
+.reel-review-bar .btn { width: auto; flex: 1; }
+
+.reel-permission-msg {
+  display: none;
+  position: absolute; inset: 0;
+  flex-direction: column; align-items: center; justify-content: center;
+  gap: 14px; padding: 30px;
+  text-align: center; color: #fff;
+  z-index: 6; background: #05050a;
+}
+.reel-permission-msg.is-visible { display: flex; }
+.reel-permission-msg .btn { width: auto; padding: 10px 20px; }
+
+@media (max-width: 380px) {
+  .reel-teleprompter-track { font-size: 19px; }
+  .reel-record-btn { width: 66px; height: 66px; }
+}
 </style>
 </head>
 <body>
@@ -417,6 +603,7 @@ input[type="range"]::-moz-range-thumb {
       <div class="idea-directive" id="ideaDirective">Muestra tu producto o servicio de hoy.</div>
       <div class="idea-photo" id="ideaPhotoHint">📷 Haz una foto de lo que tengas listo ahora mismo.</div>
       <button type="button" class="link-btn" id="nextIdeaBtn" style="margin-top:6px;">↻ Otra idea</button>
+      <button type="button" class="btn reel-launch-btn" id="openReelBtn" style="margin-top:12px;">🎥 Grabar reel con guion en pantalla</button>
     </div>
 
     <div class="field-group">
@@ -529,6 +716,44 @@ input[type="range"]::-moz-range-thumb {
 </div>
 
 <div class="toast-container" id="toastContainer"></div>
+
+<div class="reel-overlay" id="reelOverlay">
+  <div class="reel-topbar">
+    <button type="button" class="reel-close-btn" id="reelCloseBtn" aria-label="Cerrar">✕</button>
+    <div class="reel-timer" id="reelTimer">00:00</div>
+    <button type="button" class="reel-close-btn" id="reelFlipBtn" aria-label="Girar cámara">🔄</button>
+  </div>
+
+  <div class="reel-script-panel" id="reelScriptPanel">
+    <div class="reel-script-title">Tu guion</div>
+    <div class="reel-script-hint">Este es el que genera la app, pero es tuyo: escribe el tuyo, pega uno que hayas hecho con una IA, o déjalo tal cual.</div>
+    <textarea class="reel-script-textarea" id="reelScriptInput" placeholder="Escribe o pega aquí lo que vas a decir…"></textarea>
+    <div class="reel-script-meta" id="reelScriptMeta">≈ 0s hablado</div>
+    <button type="button" class="btn btn-primary" id="reelStartCameraBtn">Grabar con este guion</button>
+  </div>
+
+  <div class="reel-camera-wrap">
+    <video class="reel-video" id="reelVideo" autoplay playsinline muted></video>
+    <div class="reel-teleprompter" id="reelTeleprompter">
+      <div class="reel-teleprompter-track" id="reelTeleprompterTrack"></div>
+    </div>
+    <div class="reel-permission-msg" id="reelPermissionMsg">
+      <div style="font-size:34px;">🎥</div>
+      <div id="reelPermissionText">Necesitamos permiso de cámara y micrófono para grabar aquí.</div>
+      <button type="button" class="btn btn-primary" id="reelRetryPermissionBtn">Reintentar</button>
+    </div>
+  </div>
+
+  <div class="reel-bottombar" id="reelBottombar">
+    <div class="reel-hint" id="reelHint">Toca para empezar a grabar. El guion irá subiendo solo mientras hablas.</div>
+    <button type="button" class="reel-record-btn" id="reelRecordBtn" aria-label="Grabar"></button>
+  </div>
+
+  <div class="reel-review-bar" id="reelReviewBar">
+    <button type="button" class="btn btn-ghost" id="reelRetakeBtn" style="color:#fff; border-color:rgba(255,255,255,0.3);">↻ Repetir toma</button>
+    <button type="button" class="btn btn-primary" id="reelDownloadBtn">🔓 Consigue tu app para descargarlo — 19€</button>
+  </div>
+</div>
 
 <script>
 // ─── FORMATOS DISPONIBLES ───────────────────────────────────────────────────
@@ -1893,6 +2118,472 @@ document.fonts.ready.then(() => renderCanvas());
 
 document.getElementById('demoBuyBtn').addEventListener('click', () => {
   window.parent.postMessage({ action: 'scrollToPricing' }, '*');
+});
+
+// ─── GRABAR REEL CON TELEPROMPTER ──────────────────────────────────────────
+// Solo reutiliza el guion ya generado por la app (frase principal + caption
+// de la familia del día) — no inventa texto nuevo. Todo client-side: cámara,
+// grabación y descarga, sin servidor.
+//
+// IMPORTANTE — decisión tomada tras probar en dispositivo real: se graba el
+// stream de la cámara DIRECTAMENTE con MediaRecorder, sin pasar por un
+// <canvas> intermedio. Se probó primero grabando desde un canvas (para poder
+// "hornear" marco/pie de foto dentro del vídeo), pero eso producía vídeos
+// que Chrome reproducía bien pero que se quedaban congelados en otros
+// reproductores (galería del móvil, etc.) — un problema conocido de grabar
+// canvas.captureStream() en vez de la cámara. Grabar el stream tal cual es
+// el camino estándar y mucho más fiable; a cambio, el marco/pie de foto no
+// se pueden hornear dentro del vídeo (solo existen en las publicaciones).
+const REEL_ABSOLUTE_MAX_SECONDS = 90; // techo de seguridad (límite habitual de Reels)
+const REEL_MIN_SECONDS = 6;
+const REEL_WPM = 95; // ritmo de lectura hablada, algo pausado a propósito
+
+const reelState = {
+  stream: null,
+  recorder: null,
+  chunks: [],
+  mimeType: '',
+  blobUrl: null,
+  timerId: null,
+  rafId: null,
+  seconds: 0,
+  recording: false,
+  recordStartMs: 0,
+  scrollDistance: 0,
+  scrollReadSeconds: 6,
+  recordingMaxSeconds: REEL_ABSOLUTE_MAX_SECONDS,
+  cameraReady: false,
+  facingMode: 'user',
+  actualDurationSeconds: 0
+};
+
+const reelOverlay = document.getElementById('reelOverlay');
+const reelScriptInput = document.getElementById('reelScriptInput');
+const reelScriptMeta = document.getElementById('reelScriptMeta');
+const reelVideo = document.getElementById('reelVideo');
+const reelTimer = document.getElementById('reelTimer');
+const reelRecordBtn = document.getElementById('reelRecordBtn');
+const reelTeleprompter = document.getElementById('reelTeleprompter');
+const reelTeleprompterTrack = document.getElementById('reelTeleprompterTrack');
+const reelPermissionMsg = document.getElementById('reelPermissionMsg');
+const reelPermissionText = document.getElementById('reelPermissionText');
+const reelHint = document.getElementById('reelHint');
+const reelFlipBtn = document.getElementById('reelFlipBtn');
+
+function reelSupported() {
+  return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder);
+}
+
+function pickReelMimeType() {
+  // mp4 primero, por encima de todo: Instagram (Historias/Reels) no admite
+  // subir directamente un .webm — el archivo se descarga bien y se reproduce
+  // en el navegador, pero Instagram lo rechaza o lo muestra con "0:00" de
+  // duración. Sin mp4 la función no sirve para lo que de verdad importa.
+  const candidates = [
+    'video/mp4;codecs="avc1.42E01E, mp4a.40.2"',
+    'video/mp4;codecs=avc1,mp4a',
+    'video/mp4;codecs=h264,aac',
+    'video/mp4',
+    'video/webm;codecs=vp8,opus',  // último recurso — se reproduce bien, pero puede que Instagram no lo admita
+    'video/webm;codecs=vp9,opus',
+    'video/webm'
+  ];
+  for (const type of candidates) {
+    if (window.MediaRecorder && MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(type)) return type;
+  }
+  return '';
+}
+
+// Construye el guion a partir de lo que la app ya generó (o genera algo si
+// todavía no se había tocado "hazlo tú" / "otra idea" ese día).
+function buildReelScript() {
+  const main = document.getElementById('mainPhrase').value.trim();
+  const caption = document.getElementById('captionText').value.trim();
+  if (main || caption) return [main, caption].filter(Boolean).join('. ');
+  const familyKey = getCurrentFamily().key;
+  const openerRaw = pickFromBankByFamily('openers', familyKey);
+  const captionRaw = pickFromBankByFamily('captions', familyKey);
+  return fillTemplate([openerRaw, captionRaw].filter(Boolean).join('. '));
+}
+
+function estimateSpokenSeconds(text) {
+  const words = text.trim().split(/\s+/).filter(Boolean).length;
+  return words / REEL_WPM * 60;
+}
+
+function updateReelScriptMeta() {
+  const secs = Math.round(estimateSpokenSeconds(reelScriptInput.value));
+  reelScriptMeta.textContent = secs > 0 ? `≈ ${secs}s hablado` : '';
+}
+
+function openReelOverlay() {
+  if (!reelSupported()) {
+    toast('Tu navegador no admite grabar vídeo aquí. Prueba con Chrome actualizado.', 'error');
+    return;
+  }
+  reelOverlay.classList.add('is-open');
+  reelOverlay.classList.remove('is-camera', 'is-review');
+  reelPermissionMsg.classList.remove('is-visible');
+  reelState.facingMode = 'user';
+  reelScriptInput.value = buildReelScript();
+  updateReelScriptMeta();
+}
+
+function startReelFromScript() {
+  const script = reelScriptInput.value.trim();
+  if (!script) {
+    toast('Escribe o pega algo para leer mientras grabas.', 'info');
+    return;
+  }
+  reelTeleprompterTrack.textContent = script;
+  const estimated = estimateSpokenSeconds(script);
+  reelState.scrollReadSeconds = Math.max(4, estimated);
+  reelState.recordingMaxSeconds = Math.min(REEL_ABSOLUTE_MAX_SECONDS, Math.max(REEL_MIN_SECONDS, estimated + 8));
+  reelOverlay.classList.add('is-camera');
+  startReelCamera();
+}
+
+function closeReelOverlay() {
+  stopReelStream();
+  cancelAnimationFrame(reelState.rafId);
+  clearInterval(reelState.timerId);
+  if (reelState.recorder && reelState.recorder.state !== 'inactive') {
+    reelState.recorder.onstop = null; // no queremos pasar a revisión al cerrar
+    reelState.recorder.stop();
+  }
+  if (reelState.blobUrl) { URL.revokeObjectURL(reelState.blobUrl); reelState.blobUrl = null; }
+  reelState.chunks = [];
+  reelState.recording = false;
+  reelState.cameraReady = false;
+  reelOverlay.classList.remove('is-open', 'is-camera', 'is-review');
+  reelRecordBtn.classList.remove('is-rec');
+  reelTimer.classList.remove('is-rec');
+  reelVideo.classList.remove('is-review');
+  reelVideo.srcObject = null;
+  reelVideo.src = '';
+  resetTeleprompter();
+}
+
+function stopReelStream() {
+  if (reelState.stream) {
+    reelState.stream.getTracks().forEach(t => t.stop());
+    reelState.stream = null;
+  }
+}
+
+async function startReelCamera() {
+  stopReelStream();
+  reelState.cameraReady = false;
+  updateReelRecordButtonAvailability();
+  try {
+    // Dejamos de pedirle a la cámara un tamaño o proporción concretos —
+    // eso es lo que dispara el "resizeMode: crop-and-scale" que aplican
+    // muchos móviles para encajar la medida pedida, y es lo que causa el
+    // zoom digital. resizeMode:'none' le dice explícitamente que no recorte
+    // ni escale nada: entrega el fotograma tal cual lo capta el sensor.
+    // A cambio, el vídeo puede no salir en 9:16 exacto — sale en la
+    // proporción nativa de la cámara de ese móvil.
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: {
+        facingMode: reelState.facingMode,
+        resizeMode: { ideal: 'none' },
+        frameRate: { ideal: 30, max: 30 }
+      },
+      audio: true
+    });
+    reelState.stream = stream;
+    reelVideo.classList.remove('is-review');
+    reelVideo.classList.toggle('is-back-camera', reelState.facingMode === 'environment');
+    reelVideo.srcObject = stream;
+    reelPermissionMsg.classList.remove('is-visible');
+    waitForRealCameraFrames();
+  } catch (err) {
+    let msg = 'No hemos podido acceder a la cámara. Revisa los permisos e inténtalo de nuevo.';
+    if (err && err.name === 'NotAllowedError') msg = 'Necesitamos permiso de cámara y micrófono para grabar aquí. Actívalo en los ajustes del navegador.';
+    if (err && err.name === 'NotFoundError') msg = 'No hemos encontrado ninguna cámara en este dispositivo.';
+    reelPermissionText.textContent = msg;
+    reelPermissionMsg.classList.add('is-visible');
+  }
+}
+
+// Empezar a grabar en cuanto la cámara "conecta" (antes de que entreguen
+// fotogramas reales de verdad) es lo que produce vídeos mal formados o que
+// se quedan clavados a los pocos segundos. Esperamos a ver varios fotogramas
+// de verdad pasar antes de dejar tocar el botón de grabar.
+function waitForRealCameraFrames() {
+  const needed = 3;
+  let count = 0;
+  if (reelVideo.requestVideoFrameCallback) {
+    const onFrame = () => {
+      count++;
+      if (count >= needed) {
+        reelState.cameraReady = true;
+        updateReelRecordButtonAvailability();
+      } else if (reelState.stream) {
+        reelVideo.requestVideoFrameCallback(onFrame);
+      }
+    };
+    reelVideo.requestVideoFrameCallback(onFrame);
+  } else {
+    // Navegadores sin esta API (algunos Safari): un pequeño margen es suficiente
+    setTimeout(() => {
+      reelState.cameraReady = true;
+      updateReelRecordButtonAvailability();
+    }, 500);
+  }
+}
+
+function updateReelRecordButtonAvailability() {
+  const ready = reelState.cameraReady || reelState.recording;
+  reelRecordBtn.disabled = !ready;
+  reelRecordBtn.style.opacity = ready ? '1' : '0.35';
+  if (!ready) reelHint.textContent = 'Preparando la cámara…';
+  else if (!reelState.recording) reelHint.textContent = 'Toca para empezar a grabar. El guion irá subiendo solo mientras hablas.';
+}
+
+function resetTeleprompter() {
+  reelTeleprompterTrack.style.transform = 'translateY(0)';
+}
+
+function updateReelTimerDisplay() {
+  const m = String(Math.floor(reelState.seconds / 60)).padStart(2, '0');
+  const s = String(reelState.seconds % 60).padStart(2, '0');
+  reelTimer.textContent = `${m}:${s}`;
+}
+
+// El scroll del guion va por su cuenta (requestAnimationFrame propio, ligero:
+// solo mueve un transform, no dibuja nada pesado) — separado por completo
+// de la grabación, que ahora es directamente el stream de la cámara.
+function reelScrollLoop() {
+  if (!reelState.recording) return;
+  const now = performance.now();
+  const elapsed = (now - reelState.recordStartMs) / 1000;
+  const startDelay = 0.6; // un respiro antes de que el guion empiece a moverse
+  const progress = Math.max(0, Math.min(1, (elapsed - startDelay) / reelState.scrollReadSeconds));
+  reelTeleprompterTrack.style.transform = `translateY(${-progress * reelState.scrollDistance}px)`;
+  reelState.rafId = requestAnimationFrame(reelScrollLoop);
+}
+
+function startReelRecording() {
+  if (!reelState.stream) { toast('Todavía no tenemos acceso a la cámara.', 'error'); return; }
+  if (!reelState.cameraReady) { toast('Un segundo, la cámara todavía se está preparando.', 'info'); return; }
+
+  reelState.mimeType = pickReelMimeType();
+  reelState.chunks = [];
+  try {
+    reelState.recorder = reelState.mimeType
+      ? new MediaRecorder(reelState.stream, { mimeType: reelState.mimeType })
+      : new MediaRecorder(reelState.stream);
+  } catch (e) {
+    toast('No se ha podido iniciar la grabación en este navegador.', 'error');
+    return;
+  }
+  reelState.recorder.ondataavailable = e => { if (e.data && e.data.size > 0) reelState.chunks.push(e.data); };
+  reelState.recorder.onstop = onReelRecordingStopped;
+
+  // El recorrido del guion (scrollReadSeconds) y el tope de grabación
+  // (recordingMaxSeconds) ya se calcularon en startReelFromScript() a partir
+  // del texto real que la persona dejó en la pantalla anterior.
+  resetTeleprompter();
+  const trackHeight = reelTeleprompterTrack.getBoundingClientRect().height;
+  const wrapHeight = reelTeleprompter.getBoundingClientRect().height;
+  reelState.scrollDistance = trackHeight + wrapHeight;
+
+  reelState.recordStartMs = performance.now();
+  reelState.recording = true;
+  reelState.seconds = 0;
+  updateReelTimerDisplay();
+  reelRecordBtn.classList.add('is-rec');
+  reelTimer.classList.add('is-rec');
+  reelFlipBtn.style.visibility = 'hidden';
+  reelHint.textContent = 'Grabando… toca de nuevo para terminar.';
+
+  // Pedimos un trozo de datos cada segundo (en vez de uno solo gigante al
+  // final) — hace el archivo resultante más robusto y fácil de reproducir
+  // en cualquier reproductor, no solo en el navegador que grabó.
+  reelState.recorder.start(1000);
+  reelState.rafId = requestAnimationFrame(reelScrollLoop);
+  reelState.timerId = setInterval(() => {
+    reelState.seconds++;
+    updateReelTimerDisplay();
+    if (reelState.seconds >= reelState.recordingMaxSeconds) finishReelRecording();
+  }, 1000);
+}
+
+function finishReelRecording() {
+  if (!reelState.recording) return;
+  reelState.recording = false;
+  reelState.actualDurationSeconds = Math.max(0.5, (performance.now() - reelState.recordStartMs) / 1000);
+  clearInterval(reelState.timerId);
+  cancelAnimationFrame(reelState.rafId);
+  resetTeleprompter();
+  reelRecordBtn.classList.remove('is-rec');
+  reelTimer.classList.remove('is-rec');
+  reelFlipBtn.style.visibility = 'visible';
+  if (reelState.recorder && reelState.recorder.state !== 'inactive') reelState.recorder.stop();
+}
+
+// Chrome no rellena bien la duración en la cabecera de los .mp4 que graba
+// con MediaRecorder (queda en 0 o mal calculada) — es un fallo conocido y
+// documentado de Chrome, no algo que dependa del móvil. El vídeo en sí está
+// completo (por eso se ve entero en la mayoría de reproductores, que
+// ignoran ese dato), pero Instagram sí confía en la cabecera y corta ahí.
+// Esto corrige esos números a mano, sin volver a codificar nada del vídeo.
+function fixMp4DurationInPlace(buffer, durationSeconds) {
+  const view = new DataView(buffer);
+  const len = buffer.byteLength;
+  let movieTimescale = null;
+
+  function readBoxHeader(offset) {
+    let size = view.getUint32(offset);
+    const type = String.fromCharCode(
+      view.getUint8(offset + 4), view.getUint8(offset + 5),
+      view.getUint8(offset + 6), view.getUint8(offset + 7)
+    );
+    let headerSize = 8;
+    if (size === 1) {
+      const hi = view.getUint32(offset + 8);
+      const lo = view.getUint32(offset + 12);
+      size = hi * 4294967296 + lo;
+      headerSize = 16;
+    } else if (size === 0) {
+      size = len - offset;
+    }
+    return { type, size, headerSize, contentStart: offset + headerSize, end: offset + size };
+  }
+
+  function writeDuration(off, size, valueSeconds, timescale) {
+    const value = Math.round(valueSeconds * timescale);
+    if (size === 8) {
+      view.setUint32(off, Math.floor(value / 4294967296));
+      view.setUint32(off + 4, value >>> 0);
+    } else {
+      view.setUint32(off, value >>> 0);
+    }
+  }
+
+  function patchMvhd(box) {
+    const version = view.getUint8(box.contentStart);
+    const timescaleOff = box.contentStart + 4 + (version === 1 ? 16 : 8);
+    const durationOff = timescaleOff + 4;
+    movieTimescale = view.getUint32(timescaleOff);
+    writeDuration(durationOff, version === 1 ? 8 : 4, durationSeconds, movieTimescale);
+  }
+
+  function patchTkhd(box) {
+    if (!movieTimescale) return; // tkhd va después de mvhd en el orden habitual de Chrome
+    const version = view.getUint8(box.contentStart);
+    const durationOff = box.contentStart + 4 + (version === 1 ? 24 : 16);
+    writeDuration(durationOff, version === 1 ? 8 : 4, durationSeconds, movieTimescale);
+  }
+
+  function patchMdhd(box) {
+    const version = view.getUint8(box.contentStart);
+    const timescaleOff = box.contentStart + 4 + (version === 1 ? 16 : 8);
+    const durationOff = timescaleOff + 4;
+    const trackTimescale = view.getUint32(timescaleOff);
+    writeDuration(durationOff, version === 1 ? 8 : 4, durationSeconds, trackTimescale);
+  }
+
+  function walk(start, end) {
+    let offset = start;
+    while (offset + 8 <= end) {
+      const box = readBoxHeader(offset);
+      if (box.size < box.headerSize || box.end > end || box.size <= 0) break;
+      if (box.type === 'moov' || box.type === 'trak' || box.type === 'mdia') walk(box.contentStart, box.end);
+      else if (box.type === 'mvhd') patchMvhd(box);
+      else if (box.type === 'tkhd') patchTkhd(box);
+      else if (box.type === 'mdhd') patchMdhd(box);
+      offset = box.end;
+    }
+  }
+
+  walk(0, len);
+}
+
+async function buildReelBlob() {
+  const rawBlob = new Blob(reelState.chunks, { type: reelState.mimeType || 'video/webm' });
+  if (!(reelState.mimeType || '').includes('mp4')) return rawBlob;
+  try {
+    const buffer = await rawBlob.arrayBuffer();
+    fixMp4DurationInPlace(buffer, reelState.actualDurationSeconds || 1);
+    return new Blob([buffer], { type: rawBlob.type });
+  } catch (e) {
+    console.warn('No se pudo corregir la duración del mp4:', e);
+    return rawBlob; // si algo falla, se queda el archivo tal cual — no rompemos nada
+  }
+}
+
+async function onReelRecordingStopped() {
+  stopReelStream();
+  const blob = await buildReelBlob();
+  if (reelState.blobUrl) URL.revokeObjectURL(reelState.blobUrl);
+  reelState.blobUrl = URL.createObjectURL(blob);
+  reelVideo.classList.add('is-review');
+  reelVideo.srcObject = null;
+  reelVideo.src = reelState.blobUrl;
+  reelVideo.muted = false;
+  reelVideo.loop = true;
+  reelVideo.play().catch(() => {});
+  reelOverlay.classList.add('is-review');
+  if (!(reelState.mimeType || '').includes('mp4')) {
+    toast('Tu navegador no permite grabar en mp4 aquí — puede que Instagram no admita este vídeo directamente.', 'info');
+  }
+}
+
+function retakeReel() {
+  reelOverlay.classList.remove('is-review');
+  reelVideo.loop = false;
+  reelVideo.muted = true;
+  if (reelState.blobUrl) { URL.revokeObjectURL(reelState.blobUrl); reelState.blobUrl = null; }
+  reelVideo.src = '';
+  reelState.seconds = 0;
+  updateReelTimerDisplay();
+  reelHint.textContent = 'Toca para empezar a grabar. El guion irá subiendo solo mientras hablas.';
+  startReelCamera();
+}
+
+function downloadReelVideo() {
+  if (!reelState.blobUrl) return;
+  const ext = (reelState.mimeType || '').includes('mp4') ? 'mp4' : 'webm';
+  const name = (document.getElementById('businessName').value.trim() || 'publicador-diario').toLowerCase().replace(/[^a-z0-9]+/g, '-');
+  const a = document.createElement('a');
+  a.href = reelState.blobUrl;
+  a.download = `reel-${name}-${Date.now()}.${ext}`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  toast('Vídeo descargado ✦', 'success');
+}
+
+// Cambia entre cámara frontal y trasera. Solo disponible fuera de grabación
+// (cambiar de cámara a mitad de una grabación en curso no es seguro: rompería
+// el MediaRecorder, que está atado al stream original).
+function flipReelCamera() {
+  if (reelState.recording) return;
+  reelState.facingMode = reelState.facingMode === 'user' ? 'environment' : 'user';
+  startReelCamera();
+}
+
+document.getElementById('openReelBtn').addEventListener('click', openReelOverlay);
+document.getElementById('reelCloseBtn').addEventListener('click', closeReelOverlay);
+document.getElementById('reelStartCameraBtn').addEventListener('click', startReelFromScript);
+reelScriptInput.addEventListener('input', updateReelScriptMeta);
+document.getElementById('reelRetryPermissionBtn').addEventListener('click', startReelCamera);
+document.getElementById('reelRetakeBtn').addEventListener('click', retakeReel);
+document.getElementById('reelDownloadBtn').addEventListener('click', () => {
+  window.parent.postMessage({ action: 'scrollToPricing' }, '*');
+});
+reelFlipBtn.addEventListener('click', flipReelCamera);
+reelRecordBtn.addEventListener('click', () => {
+  if (!reelState.recording) startReelRecording();
+  else finishReelRecording();
+});
+// Si el usuario sale de la pestaña/app a mitad de grabación, cortamos en
+// seco para no dejar la cámara encendida
+// en segundo plano ni depender de un requestAnimationFrame pausado.
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden && reelState.recording) finishReelRecording();
 });
 </script>
 </body>
