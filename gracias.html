@@ -63,5 +63,41 @@ p { color: var(--text2); font-size: 15px; margin-bottom: 8px; }
 
     <p class="note">¿Algún problema para instalarla? Escríbenos y te ayudamos.</p>
   </div>
+
+<script>
+(function () {
+  // Mismos IDs que en la landing. Solo disparamos el evento de compra si la
+  // persona ya había aceptado cookies antes (misma decisión que tomó en la
+  // landing) — no activamos tracking nuevo aquí sin su consentimiento.
+  var META_PIXEL_ID = '2547129959083784';
+  var GA4_MEASUREMENT_ID = 'G-9P81Y7R9EL';
+  var CONSENT_KEY = 'publicadorDiario_cookieConsent';
+  var FIRED_KEY = 'publicadorDiario_purchaseFired'; // evita contar la compra 2 veces si recarga esta página
+
+  if (localStorage.getItem(CONSENT_KEY) !== 'accepted') return;
+  if (sessionStorage.getItem(FIRED_KEY) === '1') return;
+  sessionStorage.setItem(FIRED_KEY, '1');
+
+  // Meta Pixel
+  !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+  n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+  n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+  t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+  document,'script','https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init', META_PIXEL_ID);
+  fbq('track', 'Purchase', { value: 19, currency: 'EUR' });
+
+  // GA4
+  var s = document.createElement('script');
+  s.async = true;
+  s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA4_MEASUREMENT_ID;
+  document.head.appendChild(s);
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = function () { dataLayer.push(arguments); };
+  gtag('js', new Date());
+  gtag('config', GA4_MEASUREMENT_ID);
+  gtag('event', 'purchase', { value: 19, currency: 'EUR' });
+})();
+</script>
 </body>
 </html>
