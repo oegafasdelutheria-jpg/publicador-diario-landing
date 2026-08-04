@@ -72,11 +72,8 @@ p { color: var(--text2); font-size: 15px; margin-bottom: 8px; }
   var META_PIXEL_ID = '2547129959083784';
   var GA4_MEASUREMENT_ID = 'G-9P81Y7R9EL';
   var CONSENT_KEY = 'publicadorDiario_cookieConsent';
-  var FIRED_KEY = 'publicadorDiario_purchaseFired'; // evita contar la compra 2 veces si recarga esta página
 
   if (localStorage.getItem(CONSENT_KEY) !== 'accepted') return;
-  if (sessionStorage.getItem(FIRED_KEY) === '1') return;
-  sessionStorage.setItem(FIRED_KEY, '1');
 
   // Meta Pixel
   !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
