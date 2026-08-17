@@ -97,6 +97,7 @@ nav .wrap { display: flex; align-items: center; justify-content: space-between; 
   transform: rotate(-4deg);
 }
 .phone img { display: block; width: 100%; }
+.phone video { display: block; width: 100%; }
 .phone.small {
   position: absolute; width: 150px; right: -10px; bottom: -30px;
   transform: rotate(7deg); border-width: 5px; z-index: 2;
@@ -306,7 +307,12 @@ footer { padding: 30px 0; border-top: 1px solid var(--border); text-align: cente
     </div>
     <div class="hero-visual">
       <div class="floating-tag">✦ Hecho en 30 segundos</div>
-      <div class="phone"><img src="img/ejemplo-historia.png" alt="Ejemplo de historia generada por Publicador Diario para una cafetería"></div>
+      <div class="phone">
+        <video poster="img/app-demo-poster.jpg" autoplay muted loop playsinline aria-label="Vídeo real de Publicador Diario: crear una publicación de principio a fin">
+          <source src="video/app-demo.mp4" type="video/mp4">
+          <source src="video/app-demo.webm" type="video/webm">
+        </video>
+      </div>
       <div class="phone small"><img src="img/ejemplo-publicacion.png" alt="Ejemplo de publicación generada por Publicador Diario para una tienda de ropa"></div>
     </div>
   </div>
