@@ -92,14 +92,14 @@ nav .wrap { display: flex; align-items: center; justify-content: space-between; 
 
 .hero-visual { position: relative; display: flex; justify-content: center; }
 .phone {
-  width: 230px; border-radius: 34px; overflow: hidden;
+  width: 320px; border-radius: 34px; overflow: hidden;
   border: 6px solid #1c1c26; box-shadow: 0 30px 70px rgba(0,0,0,0.55);
   transform: rotate(-4deg);
 }
 .phone img { display: block; width: 100%; }
 .phone video { display: block; width: 100%; }
 .phone.small {
-  position: absolute; width: 150px; right: -10px; bottom: -30px;
+  position: absolute; width: 195px; right: -30px; bottom: -36px;
   transform: rotate(7deg); border-width: 5px; z-index: 2;
 }
 .floating-tag {
@@ -123,6 +123,20 @@ nav .wrap { display: flex; align-items: center; justify-content: space-between; 
 .pain-card .glyph { font-size: 26px; margin-bottom: 14px; display: block; }
 .pain-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
 .pain-card p { font-size: 14px; color: var(--text2); }
+
+.business-fit { padding: 70px 0; border-top: 1px solid var(--border); }
+.business-fit h2 {
+  font-family: 'Playfair Display', serif; font-weight: 800; font-size: clamp(26px,3.4vw,36px);
+  max-width: 640px; margin-bottom: 14px; line-height: 1.3;
+}
+.business-fit .sub { color: var(--text2); max-width: 600px; margin-bottom: 40px; font-size: 15.5px; }
+.business-fit-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.business-fit-item {
+  border-radius: 20px; overflow: hidden; border: 1px solid var(--border);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+}
+.business-fit-item img { display: block; width: 100%; }
+.business-fit-note { text-align: center; font-size: 12.5px; color: var(--text3); margin-top: 26px; }
 
 /* ── HOW IT WORKS ─────────────────────────────────── */
 .how { padding: 70px 0; border-top: 1px solid var(--border); }
@@ -256,8 +270,9 @@ footer { padding: 30px 0; border-top: 1px solid var(--border); text-align: cente
 
 @media (max-width: 860px) {
   .hero .wrap { grid-template-columns: 1fr; }
-  .hero-visual { margin-top: 20px; }
-  .pain-grid, .steps, .feat-grid { grid-template-columns: 1fr; }
+  .hero-visual { margin-top: 0; margin-bottom: 24px; order: -1; }
+  .pain-grid, .steps, .feat-grid, .business-fit-grid { grid-template-columns: 1fr; }
+  .phone { width: 260px; }
   .phone.small { display: none; }
   .demo-grid { grid-template-columns: 1fr; }
   .demo-preview { margin-top: 4px; }
@@ -338,6 +353,26 @@ footer { padding: 30px 0; border-top: 1px solid var(--border); text-align: cente
         <p>Pasan tres días. Después una semana. Y ese cliente que te seguía por Instagram, deja de acordarse de ti.</p>
       </div>
     </div>
+  </div>
+</section>
+
+<section class="business-fit">
+  <div class="wrap">
+    <span class="eyebrow">Se adapta a ti</span>
+    <h2>Escribes tu rubro. El estilo cambia solo.</h2>
+    <p class="sub">Sin subir ninguna foto — solo con a qué te dedicas y el nombre de tu negocio, la app elige el color, el patrón y hasta el tono de la frase. Esto es lo que genera para tres negocios distintos:</p>
+    <div class="business-fit-grid">
+      <div class="business-fit-item">
+        <img src="img/demo-panaderia.png" alt="Ejemplo generado por Publicador Diario para una panadería, con colores cálidos">
+      </div>
+      <div class="business-fit-item">
+        <img src="img/demo-peluqueria.png" alt="Ejemplo generado por Publicador Diario para una peluquería, con estilo elegante">
+      </div>
+      <div class="business-fit-item">
+        <img src="img/demo-ropa.png" alt="Ejemplo generado por Publicador Diario para una tienda de ropa, con estilo moderno">
+      </div>
+    </div>
+    <p class="business-fit-note">✦ Ejemplos generados con Publicador Diario — negocios de muestra, no reales.</p>
   </div>
 </section>
 
@@ -582,6 +617,7 @@ window.addEventListener('message', function (e) {
     document,'script','https://connect.facebook.net/en_US/fbevents.js');
     fbq('init', META_PIXEL_ID);
     fbq('track', 'PageView');
+    fbq('track', 'ViewContent');
     window.metaPixelReady = true;
   }
 
@@ -594,6 +630,7 @@ window.addEventListener('message', function (e) {
     window.gtag = function () { dataLayer.push(arguments); };
     gtag('js', new Date());
     gtag('config', GA4_MEASUREMENT_ID);
+    gtag('event', 'view_content');
   }
 
   function loadTrackers() {
@@ -625,6 +662,42 @@ window.addEventListener('message', function (e) {
       if (window.gtag) gtag('event', 'begin_checkout', { value: 19, currency: 'EUR' });
     });
   });
+
+  // ─── EMBUDO COMPLETO ──────────────────────────────────────────────────
+  // Sin esto solo sabíamos "visitas → compras", sin ver dónde se cae la
+  // gente por el camino. DemoPlay (¿llegan a ver el vídeo del Hero?) y
+  // ViewPricing (¿llegan a ver el precio?) son los dos pasos intermedios
+  // que nos faltaban para saber si el problema está arriba o abajo del embudo.
+  // El vídeo tiene autoplay, así que "empieza a reproducirse" pasa casi
+  // para todo el mundo casi al instante — eso no distingue nada. Medimos
+  // en su lugar que lleve un mínimo de tiempo real reproduciéndose (3s),
+  // como señal de que la persona sigue ahí, no que el navegador lo cargó.
+  var heroVideo = document.querySelector('.phone video');
+  var demoPlayFired = false;
+  if (heroVideo) {
+    heroVideo.addEventListener('timeupdate', function () {
+      if (demoPlayFired || heroVideo.currentTime < 3) return;
+      demoPlayFired = true;
+      if (window.metaPixelReady) fbq('trackCustom', 'DemoPlay');
+      if (window.gtag) gtag('event', 'demo_play');
+    });
+  }
+
+  var pricingSection = document.getElementById('comprar');
+  var pricingViewFired = false;
+  if (pricingSection && 'IntersectionObserver' in window) {
+    var pricingObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting && !pricingViewFired) {
+          pricingViewFired = true;
+          if (window.metaPixelReady) fbq('trackCustom', 'ViewPricing');
+          if (window.gtag) gtag('event', 'view_pricing');
+          pricingObserver.disconnect();
+        }
+      });
+    }, { threshold: 0.4 });
+    pricingObserver.observe(pricingSection);
+  }
 })();
 </script>
 
